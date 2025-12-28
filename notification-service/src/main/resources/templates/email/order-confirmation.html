@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .order-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .order-details {
+            margin: 20px 0;
+        }
+        .order-details table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .order-details th,
+        .order-details td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .order-details th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+            text-align: right;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #007bff;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 14px;
+        }
+        .contact-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 20px;
+            }
+            .order-details table {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">E-Commerce Platform</div>
+            <h1>Order Confirmation</h1>
+        </div>
+        
+        <div class="content">
+            <p>Dear <span th:text="${customerName}">Customer</span>,</p>
+            
+            <p>Thank you for your order! We're excited to confirm that we've received your order and it's being processed.</p>
+            
+            <div class="order-info">
+                <h3>Order Information</h3>
+                <p><strong>Order Number:</strong> <span th:text="${orderId}">#12345</span></p>
+                <p><strong>Order Date:</strong> <span th:text="${orderDate}">January 15, 2024</span></p>
+                <p><strong>Estimated Delivery:</strong> <span th:text="${estimatedDelivery ?: '3-5 business days'}">3-5 business days</span></p>
+            </div>
+            
+            <div class="order-details">
+                <h3>Order Details</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- This would be dynamically populated with order items -->
+                        <tr th:if="${orderItems}" th:each="item : ${orderItems}">
+                            <td th:text="${item.name}">Product Name</td>
+                            <td th:text="${item.quantity}">1</td>
+                            <td th:text="'$' + ${item.price}">$99.99</td>
+                            <td th:text="'$' + ${item.total}">$99.99</td>
+                        </tr>
+                        <!-- Fallback if no items provided -->
+                        <tr th:unless="${orderItems}">
+                            <td colspan="4" style="text-align: center; font-style: italic;">Order items will be listed here</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="total">
+                    Total: <span th:text="'$' + ${orderTotal}">$99.99</span>
+                </div>
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="#" th:href="${trackOrderLink ?: '#'}" class="button">Track Your Order</a>
+            </div>
+            
+            <div class="contact-info">
+                <h4>Need Help?</h4>
+                <p>If you have any questions about your order, please don't hesitate to contact us:</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li>📧 Email: support@ecommerce.com</li>
+                    <li>📞 Phone: 1-800-123-4567</li>
+                    <li>💬 Live Chat: Available 24/7 on our website</li>
+                </ul>
+            </div>
+            
+            <p>We'll send you another email with tracking information once your order ships.</p>
+            
+            <p>Thank you for choosing E-Commerce Platform!</p>
+            
+            <p>Best regards,<br>
+            The E-Commerce Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>This email was sent to <span th:text="${recipientEmail}">customer@example.com</span></p>
+            <p>© 2024 E-Commerce Platform. All rights reserved.</p>
+            <p>123 Commerce Street, Business City, BC 12345</p>
+            <p>
+                <a href="#" style="color: #007bff; text-decoration: none;">Unsubscribe</a> | 
+                <a href="#" style="color: #007bff; text-decoration: none;">Privacy Policy</a> | 
+                <a href="#" style="color: #007bff; text-decoration: none;">Terms of Service</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

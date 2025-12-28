@@ -1,0 +1,221 @@
+# Common Distributed Tracing Configuration for all microservices
+spring:
+  sleuth:
+    # Enable Sleuth tracing
+    enabled: true
+    
+    # Sampling configuration
+    sampler:
+      # Sample 100% of requests in development, adjust for production
+      probability: ${SLEUTH_SAMPLING_PROBABILITY:1.0}
+      
+    # Zipkin configuration
+    zipkin:
+      # Zipkin server URL
+      base-url: ${ZIPKIN_BASE_URL:http://localhost:9411}
+      # Send traces to Zipkin
+      enabled: true
+      # Compression for better performance
+      compression:
+        enabled: true
+      # Connection timeout
+      connect-timeout: 1000
+      # Read timeout
+      read-timeout: 10000
+      # Sender configuration
+      sender:
+        type: web
+        
+    # Web configuration
+    web:
+      # Skip patterns for health checks and actuator endpoints
+      skip-pattern: "/actuator.*|/health.*|/info.*|/metrics.*"
+      # Additional headers to include in traces
+      additional-skip-pattern: "/favicon.ico|/static/.*|/css/.*|/js/.*|/images/.*"
+      
+    # HTTP configuration
+    http:
+      # Enable HTTP tracing
+      enabled: true
+      # Legacy support
+      legacy:
+        enabled: false
+        
+    # Async configuration
+    async:
+      # Enable async tracing
+      enabled: true
+      
+    # Scheduled task tracing
+    scheduled:
+      # Skip scheduled tasks from tracing
+      skip-pattern: "org.springframework.*"
+      
+    # Integration tracing
+    integration:
+      # Enable Spring Integration tracing
+      enabled: true
+      
+    # Messaging tracing
+    messaging:
+      # Enable messaging tracing (Kafka, RabbitMQ, etc.)
+      enabled: true
+      kafka:
+        # Enable Kafka tracing
+        enabled: true
+        # Remote service name for Kafka
+        remote-service-name: kafka
+        
+    # RPC tracing
+    rpc:
+      # Enable RPC tracing
+      enabled: true
+      
+    # Custom span configuration
+    span:
+      # Custom tags to add to all spans
+      tags:
+        application.name: ${spring.application.name}
+        application.version: ${application.version:1.0.0}
+        environment: ${spring.profiles.active:development}
+        
+    # Baggage configuration (for cross-service context propagation)
+    baggage:
+      # Correlation fields to propagate
+      correlation-fields:
+        - user-id
+        - session-id
+        - request-id
+        - tenant-id
+      # Remote fields to propagate
+      remote-fields:
+        - user-id
+        - session-id
+        - request-id
+        - tenant-id
+        
+    # Propagation configuration
+    propagation:
+      # Propagation type (B3 is widely supported)
+      type: b3
+      
+# Logging configuration for tracing
+logging:
+  level:
+    # Sleuth logging levels
+    org.springframework.cloud.sleuth: INFO
+    # Zipkin logging levels
+    zipkin2: WARN
+    # Brave (underlying tracing library) logging
+    brave: WARN
+  pattern:
+    # Include trace and span IDs in log pattern
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+    
+# Management endpoints for tracing
+management:
+  # Enable tracing metrics
+  metrics:
+    export:
+      # Export tracing metrics to monitoring systems
+      prometheus:
+        enabled: true
+    # Tracing-specific metrics
+    tags:
+      service: ${spring.application.name}
+      version: ${application.version:1.0.0}
+      
+  # Tracing endpoint configuration
+  tracing:
+    # Enable tracing endpoint
+    enabled: true
+    # Sampling configuration
+    sampling:
+      probability: ${SLEUTH_SAMPLING_PROBABILITY:1.0}
+      
+  # Health check for tracing
+  health:
+    # Include tracing in health checks
+    zipkin:
+      enabled: true
+      
+  endpoints:
+    web:
+      exposure:
+        # Expose tracing-related endpoints
+        include: "health,info,metrics,prometheus,zipkin"
+        
+# Custom tracing configuration
+tracing:
+  # Custom service configuration
+  service:
+    # Service name override (if different from spring.application.name)
+    name: ${spring.application.name}
+    # Service version
+    version: ${application.version:1.0.0}
+    # Service environment
+    environment: ${spring.profiles.active:development}
+    
+  # Custom span names
+  span-names:
+    # HTTP requests
+    http-request: "http-request"
+    # Database operations
+    database-query: "database-query"
+    # External service calls
+    external-service-call: "external-service-call"
+    # Message processing
+    message-processing: "message-processing"
+    
+  # Error handling
+  error-handling:
+    # Include error details in spans
+    include-error-details: true
+    # Tag errors
+    tag-errors: true
+    
+  # Performance configuration
+  performance:
+    # Enable performance monitoring
+    enabled: true
+    # Slow request threshold (in milliseconds)
+    slow-request-threshold: 1000
+    # Include request/response sizes
+    include-request-size: true
+    include-response-size: true
+    
+# Circuit breaker integration with tracing
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        # Include circuit breaker events in traces
+        event-consumer-buffer-size: 10
+        
+  retry:
+    configs:
+      default:
+        # Include retry events in traces
+        enable-exponential-backoff: true
+        
+# Feign client tracing (if using Feign)
+feign:
+  # Enable Feign client tracing
+  hystrix:
+    enabled: false
+  # Compression
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+      
+# Custom headers for correlation
+correlation:
+  headers:
+    # Headers to extract and propagate
+    - X-Correlation-ID
+    - X-User-ID
+    - X-Session-ID
+    - X-Tenant-ID
+    - X-Request-ID

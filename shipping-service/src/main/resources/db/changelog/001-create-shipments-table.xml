@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <changeSet id="001-create-shipments-table" author="shipping-service">
+        <comment>Create shipments table with all required fields</comment>
+        
+        <createTable tableName="shipments">
+            <!-- Primary Key -->
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <!-- Business Identifiers -->
+            <column name="tracking_number" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            
+            <!-- Carrier Information -->
+            <column name="carrier" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="carrier_tracking_number" type="VARCHAR(100)"/>
+            <column name="service_type" type="VARCHAR(50)"/>
+            
+            <!-- Status and Priority -->
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority" type="VARCHAR(20)" defaultValue="STANDARD">
+                <constraints nullable="false"/>
+            </column>
+            
+            <!-- Origin Address -->
+            <column name="origin_name" type="VARCHAR(100)"/>
+            <column name="origin_company" type="VARCHAR(100)"/>
+            <column name="origin_address_line1" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="origin_address_line2" type="VARCHAR(255)"/>
+            <column name="origin_city" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="origin_state" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="origin_postal_code" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="origin_country" type="VARCHAR(2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="origin_phone" type="VARCHAR(20)"/>
+            <column name="origin_email" type="VARCHAR(100)"/>
+            
+            <!-- Destination Address -->
+            <column name="destination_name" type="VARCHAR(100)"/>
+            <column name="destination_company" type="VARCHAR(100)"/>
+            <column name="destination_address_line1" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="destination_address_line2" type="VARCHAR(255)"/>
+            <column name="destination_city" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="destination_state" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="destination_postal_code" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="destination_country" type="VARCHAR(2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="destination_phone" type="VARCHAR(20)"/>
+            <column name="destination_email" type="VARCHAR(100)"/>
+            
+            <!-- Package Information -->
+            <column name="weight_kg" type="DECIMAL(10,3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="length_cm" type="DECIMAL(10,2)"/>
+            <column name="width_cm" type="DECIMAL(10,2)"/>
+            <column name="height_cm" type="DECIMAL(10,2)"/>
+            
+            <!-- Cost Information -->
+            <column name="shipping_cost" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="currency" type="VARCHAR(3)" defaultValue="USD">
+                <constraints nullable="false"/>
+            </column>
+            
+            <!-- Special Instructions -->
+            <column name="special_instructions" type="TEXT"/>
+            
+            <!-- Timestamps -->
+            <column name="estimated_delivery_date" type="TIMESTAMP"/>
+            <column name="actual_delivery_date" type="TIMESTAMP"/>
+            <column name="shipped_date" type="TIMESTAMP"/>
+            <column name="created_date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            
+            <!-- Audit Fields -->
+            <column name="created_by" type="VARCHAR(50)"/>
+            <column name="last_modified_by" type="VARCHAR(50)"/>
+            <column name="version" type="BIGINT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <!-- Add comments to table and important columns -->
+        <sql>
+            COMMENT ON TABLE shipments IS 'Main table for storing shipment information and tracking details';
+            COMMENT ON COLUMN shipments.tracking_number IS 'Unique tracking number generated by the system';
+            COMMENT ON COLUMN shipments.order_id IS 'Reference to the order that this shipment belongs to';
+            COMMENT ON COLUMN shipments.carrier_tracking_number IS 'Tracking number provided by the shipping carrier';
+            COMMENT ON COLUMN shipments.status IS 'Current status of the shipment (CREATED, PROCESSING, SHIPPED, etc.)';
+            COMMENT ON COLUMN shipments.priority IS 'Shipping priority level (STANDARD, EXPRESS, OVERNIGHT)';
+            COMMENT ON COLUMN shipments.weight_kg IS 'Package weight in kilograms';
+            COMMENT ON COLUMN shipments.shipping_cost IS 'Cost of shipping in the specified currency';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,160 @@
+# Common Kafka Configuration for all microservices
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    
+    # Producer Configuration
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+      batch-size: 16384
+      linger-ms: 5
+      buffer-memory: 33554432
+      compression-type: snappy
+      enable-idempotence: true
+      max-in-flight-requests-per-connection: 5
+      
+    # Consumer Configuration
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: ${spring.application.name}
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      max-poll-records: 500
+      fetch-min-size: 1
+      fetch-max-wait: 500
+      properties:
+        spring.json.trusted.packages: "com.ecommerce.*"
+        
+    # Listener Configuration
+    listener:
+      ack-mode: manual_immediate
+      concurrency: 3
+      poll-timeout: 3000
+      
+    # Admin Configuration
+    admin:
+      properties:
+        bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+        
+# Kafka Topics Configuration
+kafka:
+  topics:
+    # User Events
+    user-registered: user.registered
+    user-updated: user.updated
+    user-deleted: user.deleted
+    
+    # Product Events
+    product-created: product.created
+    product-updated: product.updated
+    product-deleted: product.deleted
+    product-price-changed: product.price.changed
+    
+    # Category Events
+    category-created: category.created
+    category-updated: category.updated
+    category-deleted: category.deleted
+    
+    # Cart Events
+    cart-updated: cart.updated
+    cart-cleared: cart.cleared
+    cart-item-added: cart.item.added
+    cart-item-removed: cart.item.removed
+    cart-item-updated: cart.item.updated
+    
+    # Order Events
+    order-created: order.created
+    order-updated: order.updated
+    order-cancelled: order.cancelled
+    order-confirmed: order.confirmed
+    order-shipped: order.shipped
+    order-delivered: order.delivered
+    
+    # Payment Events
+    payment-initiated: payment.initiated
+    payment-completed: payment.completed
+    payment-failed: payment.failed
+    payment-refunded: payment.refunded
+    
+    # Inventory Events
+    inventory-updated: inventory.updated
+    stock-reserved: inventory.stock.reserved
+    stock-released: inventory.stock.released
+    stock-confirmed: inventory.stock.confirmed
+    low-stock-alert: inventory.low.stock.alert
+    reorder-needed: inventory.reorder.needed
+    
+    # Shipping Events
+    shipment-created: shipment.created
+    shipment-updated: shipment.updated
+    shipment-cancelled: shipment.cancelled
+    tracking-updated: tracking.updated
+    
+    # Notification Events
+    notification-send: notification.send
+    notification-sent: notification.sent
+    notification-failed: notification.failed
+    
+    # Review Events
+    review-created: review.created
+    review-updated: review.updated
+    review-deleted: review.deleted
+    review-approved: review.approved
+    review-rejected: review.rejected
+    
+    # Recommendation Events
+    recommendation-requested: recommendation.requested
+    recommendation-generated: recommendation.generated
+    user-interaction: user.interaction
+    
+  # Retry Configuration
+  retry:
+    attempts: 3
+    delay: 1000
+    multiplier: 2.0
+    max-delay: 10000
+    
+  # Dead Letter Topic Configuration
+  dlt:
+    suffix: .dlt
+    retention-ms: 604800000 # 7 days
+    
+# Circuit Breaker Configuration for Kafka
+resilience4j:
+  circuitbreaker:
+    instances:
+      kafka-producer:
+        register-health-indicator: true
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state: 5s
+        failure-rate-threshold: 50
+        event-consumer-buffer-size: 10
+        
+  retry:
+    instances:
+      kafka-producer:
+        max-attempts: 3
+        wait-duration: 1s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        
+# Monitoring and Metrics
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+      
+logging:
+  level:
+    org.springframework.kafka: INFO
+    org.apache.kafka: WARN

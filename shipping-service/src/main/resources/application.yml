@@ -1,0 +1,269 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /shipping
+
+spring:
+  application:
+    name: shipping-service
+  
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shipping_db
+    username: ${DB_USERNAME:ecommerce}
+    password: ${DB_PASSWORD:ecommerce123}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      leak-detection-threshold: 60000
+  
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 25
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+    open-in-view: false
+  
+  # Liquibase Configuration
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+  
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+      batch-size: 16384
+      linger-ms: 5
+      buffer-memory: 33554432
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+    consumer:
+      group-id: shipping-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        spring.json.trusted.packages: "com.ecommerce.*"
+    listener:
+      ack-mode: manual_immediate
+      concurrency: 3
+  
+  # Cloud Configuration
+  cloud:
+    config:
+      uri: ${CONFIG_SERVER_URL:http://localhost:8888}
+      fail-fast: true
+      retry:
+        initial-interval: 1000
+        max-attempts: 6
+        max-interval: 2000
+        multiplier: 1.1
+
+# Eureka Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+    fetch-registry: true
+    register-with-eureka: true
+    registry-fetch-interval-seconds: 30
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+    metadata-map:
+      version: "@project.version@"
+      git-version: "@git.commit.id.describe@"
+      git-commit: "@git.commit.id.abbrev@"
+      git-branch: "@git.branch@"
+
+# Management and Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,configprops,loggers
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: always
+    metrics:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.9, 0.95, 0.99
+  health:
+    circuitbreakers:
+      enabled: true
+    ratelimiters:
+      enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    com.ecommerce.shipping: INFO
+    org.springframework.kafka: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    org.springframework.cloud.sleuth: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
+  file:
+    name: logs/shipping-service.log
+    max-size: 10MB
+    max-history: 30
+
+# Resilience4j Configuration
+resilience4j:
+  circuitbreaker:
+    instances:
+      payment-service:
+        register-health-indicator: true
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        wait-duration-in-open-state: 30s
+        failure-rate-threshold: 50
+        slow-call-rate-threshold: 50
+        slow-call-duration-threshold: 2s
+      inventory-service:
+        register-health-indicator: true
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        wait-duration-in-open-state: 30s
+        failure-rate-threshold: 50
+        slow-call-rate-threshold: 50
+        slow-call-duration-threshold: 2s
+  retry:
+    instances:
+      payment-service:
+        max-attempts: 3
+        wait-duration: 1s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+      inventory-service:
+        max-attempts: 3
+        wait-duration: 1s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+  timelimiter:
+    instances:
+      payment-service:
+        timeout-duration: 3s
+      inventory-service:
+        timeout-duration: 3s
+
+# Application Specific Configuration
+app:
+  shipping:
+    # Carrier Configuration
+    carriers:
+      fedex:
+        enabled: true
+        api-url: ${FEDEX_API_URL:https://api.fedex.com}
+        api-key: ${FEDEX_API_KEY:}
+        account-number: ${FEDEX_ACCOUNT_NUMBER:}
+        meter-number: ${FEDEX_METER_NUMBER:}
+        timeout: 30s
+      ups:
+        enabled: true
+        api-url: ${UPS_API_URL:https://api.ups.com}
+        api-key: ${UPS_API_KEY:}
+        username: ${UPS_USERNAME:}
+        password: ${UPS_PASSWORD:}
+        timeout: 30s
+      dhl:
+        enabled: true
+        api-url: ${DHL_API_URL:https://api.dhl.com}
+        api-key: ${DHL_API_KEY:}
+        site-id: ${DHL_SITE_ID:}
+        password: ${DHL_PASSWORD:}
+        timeout: 30s
+    
+    # Tracking Configuration
+    tracking:
+      update-interval: 30m
+      batch-size: 100
+      max-retries: 3
+      retry-delay: 5m
+    
+    # Notification Configuration
+    notifications:
+      enabled: true
+      events:
+        - SHIPPED
+        - OUT_FOR_DELIVERY
+        - DELIVERED
+        - EXCEPTION
+        - CANCELLED
+    
+    # Business Rules
+    rules:
+      auto-cancel-after-days: 30
+      max-weight-kg: 70
+      max-dimensions-cm: 150
+      default-carrier: FEDEX
+      priority-carriers:
+        EXPRESS: UPS
+        OVERNIGHT: FEDEX
+        STANDARD: DHL
+
+# Kafka Topics
+kafka:
+  topics:
+    shipment-created: shipment.created
+    shipment-updated: shipment.updated
+    shipment-cancelled: shipment.cancelled
+    tracking-updated: tracking.updated
+    order-events: order.events
+    payment-events: payment.events
+    inventory-events: inventory.events
+
+# OpenAPI Documentation
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  info:
+    title: Shipping Service API
+    description: Microservice for managing shipments and tracking
+    version: "@project.version@"
+    contact:
+      name: E-commerce Team
+      email: team@ecommerce.com
+  servers:
+    - url: http://localhost:8086/shipping
+      description: Local Development Server
+    - url: https://api.ecommerce.com/shipping
+      description: Production Server

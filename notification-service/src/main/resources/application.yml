@@ -1,0 +1,280 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: notification-service
+  cloud:
+    compatibility-verifier:
+      enabled: false
+  
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/notification_db
+    username: ecommerce
+    password: ecommerce123
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000
+  
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+  
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: notification-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+      properties:
+        spring.json.trusted.packages: "*"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+  
+  # Email Configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME:your-email@gmail.com}
+    password: ${EMAIL_PASSWORD:your-app-password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            trust: smtp.gmail.com
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
+  
+  # Thymeleaf Configuration
+  thymeleaf:
+    cache: false
+    mode: HTML
+    encoding: UTF-8
+    prefix: classpath:/templates/
+    suffix: .html
+
+# Eureka Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 30
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+    metadata-map:
+      version: 1.0
+      description: "Notification Service for E-commerce Platform"
+
+# Management and Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,kafka
+  endpoint:
+    health:
+      show-details: always
+  health:
+    kafka:
+      enabled: true
+    mail:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    com.ecommerce.notification: INFO
+    org.springframework.kafka: WARN
+    org.springframework.mail: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/notification-service.log
+    max-size: 10MB
+    max-history: 30
+
+# Custom Notification Configuration
+notification:
+  # Email Settings
+  email:
+    from-address: ${EMAIL_FROM:noreply@ecommerce.com}
+    from-name: ${EMAIL_FROM_NAME:E-Commerce Platform}
+    reply-to: ${EMAIL_REPLY_TO:support@ecommerce.com}
+    max-retry-attempts: 3
+    retry-delay-minutes: 5
+    batch-size: 50
+    rate-limit-per-minute: 100
+  
+  # SMS Settings (Twilio)
+  sms:
+    twilio:
+      account-sid: ${TWILIO_ACCOUNT_SID:your-account-sid}
+      auth-token: ${TWILIO_AUTH_TOKEN:your-auth-token}
+      from-number: ${TWILIO_FROM_NUMBER:+1234567890}
+    max-retry-attempts: 3
+    retry-delay-minutes: 2
+    rate-limit-per-minute: 50
+    max-message-length: 160
+  
+  # Push Notification Settings (Firebase)
+  push:
+    firebase:
+      credentials-path: ${FIREBASE_CREDENTIALS_PATH:firebase-service-account.json}
+      project-id: ${FIREBASE_PROJECT_ID:your-project-id}
+    max-retry-attempts: 3
+    retry-delay-minutes: 1
+    batch-size: 100
+    rate-limit-per-minute: 200
+  
+  # Template Settings
+  template:
+    cache-enabled: true
+    cache-ttl-minutes: 60
+    default-language: en
+  
+  # Async Processing
+  async:
+    core-pool-size: 5
+    max-pool-size: 20
+    queue-capacity: 100
+    thread-name-prefix: "NotificationAsync-"
+  
+  # Scheduling
+  scheduler:
+    retry-processing:
+      enabled: true
+      cron: "0 */5 * * * *"  # Every 5 minutes
+      batch-size: 100
+    
+    timeout-processing:
+      enabled: true
+      cron: "0 */10 * * * *"  # Every 10 minutes
+      timeout-minutes: 30
+    
+    cleanup:
+      enabled: true
+      cron: "0 0 2 * * *"  # Daily at 2 AM
+      retention-days: 30
+  
+  # Rate Limiting
+  rate-limit:
+    enabled: true
+    requests-per-minute: 1000
+    burst-capacity: 100
+  
+  # Circuit Breaker
+  circuit-breaker:
+    enabled: true
+    failure-rate-threshold: 50
+    wait-duration-in-open-state: 60000
+    sliding-window-size: 10
+    minimum-number-of-calls: 5
+
+# Resilience4j Configuration
+resilience4j:
+  circuitbreaker:
+    instances:
+      emailService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+      
+      smsService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+      
+      pushService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+  
+  retry:
+    instances:
+      emailService:
+        maxAttempts: 3
+        waitDuration: 1000ms
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+      
+      smsService:
+        maxAttempts: 3
+        waitDuration: 500ms
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+      
+      pushService:
+        maxAttempts: 3
+        waitDuration: 500ms
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+  
+  ratelimiter:
+    instances:
+      emailService:
+        limitForPeriod: 100
+        limitRefreshPeriod: 60s
+        timeoutDuration: 1s
+      
+      smsService:
+        limitForPeriod: 50
+        limitRefreshPeriod: 60s
+        timeoutDuration: 1s
+      
+      pushService:
+        limitForPeriod: 200
+        limitRefreshPeriod: 60s
+        timeoutDuration: 1s

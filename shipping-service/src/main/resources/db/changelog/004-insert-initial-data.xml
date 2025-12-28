@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <changeSet id="004-insert-initial-data" author="shipping-service">
+        <comment>Insert initial reference data and sample records</comment>
+        
+        <!-- Sample Shipment Records for Testing -->
+        <insert tableName="shipments">
+            <column name="tracking_number" value="SHP-2024-000001"/>
+            <column name="order_id" value="1001"/>
+            <column name="carrier" value="FEDEX"/>
+            <column name="carrier_tracking_number" value="1234567890"/>
+            <column name="service_type" value="FEDEX_GROUND"/>
+            <column name="status" value="DELIVERED"/>
+            <column name="priority" value="STANDARD"/>
+            
+            <!-- Origin Address -->
+            <column name="origin_name" value="E-Commerce Warehouse"/>
+            <column name="origin_company" value="E-Commerce Inc."/>
+            <column name="origin_address_line1" value="123 Warehouse Blvd"/>
+            <column name="origin_city" value="Los Angeles"/>
+            <column name="origin_state" value="CA"/>
+            <column name="origin_postal_code" value="90210"/>
+            <column name="origin_country" value="US"/>
+            <column name="origin_phone" value="+1-555-0123"/>
+            <column name="origin_email" value="warehouse@ecommerce.com"/>
+            
+            <!-- Destination Address -->
+            <column name="destination_name" value="John Doe"/>
+            <column name="destination_address_line1" value="456 Customer St"/>
+            <column name="destination_city" value="New York"/>
+            <column name="destination_state" value="NY"/>
+            <column name="destination_postal_code" value="10001"/>
+            <column name="destination_country" value="US"/>
+            <column name="destination_phone" value="+1-555-0456"/>
+            <column name="destination_email" value="john.doe@email.com"/>
+            
+            <!-- Package Information -->
+            <column name="weight_kg" value="2.5"/>
+            <column name="length_cm" value="30.0"/>
+            <column name="width_cm" value="20.0"/>
+            <column name="height_cm" value="15.0"/>
+            
+            <!-- Cost Information -->
+            <column name="shipping_cost" value="12.99"/>
+            <column name="currency" value="USD"/>
+            
+            <!-- Timestamps -->
+            <column name="estimated_delivery_date" valueDate="2024-01-15T10:00:00"/>
+            <column name="actual_delivery_date" valueDate="2024-01-14T14:30:00"/>
+            <column name="shipped_date" valueDate="2024-01-12T09:15:00"/>
+            <column name="created_date" valueDate="2024-01-10T08:00:00"/>
+            <column name="last_modified_date" valueDate="2024-01-14T14:30:00"/>
+            
+            <!-- Audit Fields -->
+            <column name="created_by" value="system"/>
+            <column name="last_modified_by" value="system"/>
+            <column name="version" value="3"/>
+        </insert>
+        
+        <insert tableName="shipments">
+            <column name="tracking_number" value="SHP-2024-000002"/>
+            <column name="order_id" value="1002"/>
+            <column name="carrier" value="UPS"/>
+            <column name="carrier_tracking_number" value="1Z999AA1234567890"/>
+            <column name="service_type" value="UPS_GROUND"/>
+            <column name="status" value="IN_TRANSIT"/>
+            <column name="priority" value="EXPRESS"/>
+            
+            <!-- Origin Address -->
+            <column name="origin_name" value="E-Commerce Warehouse"/>
+            <column name="origin_company" value="E-Commerce Inc."/>
+            <column name="origin_address_line1" value="123 Warehouse Blvd"/>
+            <column name="origin_city" value="Los Angeles"/>
+            <column name="origin_state" value="CA"/>
+            <column name="origin_postal_code" value="90210"/>
+            <column name="origin_country" value="US"/>
+            <column name="origin_phone" value="+1-555-0123"/>
+            <column name="origin_email" value="warehouse@ecommerce.com"/>
+            
+            <!-- Destination Address -->
+            <column name="destination_name" value="Jane Smith"/>
+            <column name="destination_address_line1" value="789 Main Ave"/>
+            <column name="destination_city" value="Chicago"/>
+            <column name="destination_state" value="IL"/>
+            <column name="destination_postal_code" value="60601"/>
+            <column name="destination_country" value="US"/>
+            <column name="destination_phone" value="+1-555-0789"/>
+            <column name="destination_email" value="jane.smith@email.com"/>
+            
+            <!-- Package Information -->
+            <column name="weight_kg" value="1.2"/>
+            <column name="length_cm" value="25.0"/>
+            <column name="width_cm" value="15.0"/>
+            <column name="height_cm" value="10.0"/>
+            
+            <!-- Cost Information -->
+            <column name="shipping_cost" value="18.99"/>
+            <column name="currency" value="USD"/>
+            
+            <!-- Timestamps -->
+            <column name="estimated_delivery_date" valueDate="2024-01-20T16:00:00"/>
+            <column name="shipped_date" valueDate="2024-01-18T11:30:00"/>
+            <column name="created_date" valueDate="2024-01-17T14:20:00"/>
+            <column name="last_modified_date" valueDate="2024-01-19T09:45:00"/>
+            
+            <!-- Audit Fields -->
+            <column name="created_by" value="system"/>
+            <column name="last_modified_by" value="system"/>
+            <column name="version" value="2"/>
+        </insert>
+        
+        <insert tableName="shipments">
+            <column name="tracking_number" value="SHP-2024-000003"/>
+            <column name="order_id" value="1003"/>
+            <column name="carrier" value="DHL"/>
+            <column name="carrier_tracking_number" value="1234567890123456"/>
+            <column name="service_type" value="DHL_EXPRESS"/>
+            <column name="status" value="EXCEPTION"/>
+            <column name="priority" value="OVERNIGHT"/>
+            
+            <!-- Origin Address -->
+            <column name="origin_name" value="E-Commerce Warehouse"/>
+            <column name="origin_company" value="E-Commerce Inc."/>
+            <column name="origin_address_line1" value="123 Warehouse Blvd"/>
+            <column name="origin_city" value="Los Angeles"/>
+            <column name="origin_state" value="CA"/>
+            <column name="origin_postal_code" value="90210"/>
+            <column name="origin_country" value="US"/>
+            <column name="origin_phone" value="+1-555-0123"/>
+            <column name="origin_email" value="warehouse@ecommerce.com"/>
+            
+            <!-- Destination Address -->
+            <column name="destination_name" value="Bob Johnson"/>
+            <column name="destination_address_line1" value="321 Oak Street"/>
+            <column name="destination_city" value="Miami"/>
+            <column name="destination_state" value="FL"/>
+            <column name="destination_postal_code" value="33101"/>
+            <column name="destination_country" value="US"/>
+            <column name="destination_phone" value="+1-555-0321"/>
+            <column name="destination_email" value="bob.johnson@email.com"/>
+            
+            <!-- Package Information -->
+            <column name="weight_kg" value="0.8"/>
+            <column name="length_cm" value="20.0"/>
+            <column name="width_cm" value="15.0"/>
+            <column name="height_cm" value="8.0"/>
+            
+            <!-- Cost Information -->
+            <column name="shipping_cost" value="35.99"/>
+            <column name="currency" value="USD"/>
+            
+            <!-- Special Instructions -->
+            <column name="special_instructions" value="Fragile - Handle with care. Signature required."/>
+            
+            <!-- Timestamps -->
+            <column name="estimated_delivery_date" valueDate="2024-01-22T12:00:00"/>
+            <column name="shipped_date" valueDate="2024-01-20T16:45:00"/>
+            <column name="created_date" valueDate="2024-01-19T10:30:00"/>
+            <column name="last_modified_date" valueDate="2024-01-21T13:15:00"/>
+            
+            <!-- Audit Fields -->
+            <column name="created_by" value="system"/>
+            <column name="last_modified_by" value="system"/>
+            <column name="version" value="4"/>
+        </insert>
+        
+        <!-- Sample Tracking Events -->
+        
+        <!-- Events for Shipment 1 (Delivered) -->
+        <insert tableName="tracking_events">
+            <column name="shipment_id" value="1"/>
+            <column name="status" value="CREATED"/>
+            <column name="description" value="Shipment created and label printed"/>
+            <column name="event_code" value="CR"/>
+            <column name="event_type" value="CREATED"/>
+            <column name="location_city" value="Los Angeles"/>
+            <column name="location_state" value="CA"/>
+            <column name="location_country" value="US"/>
+            <column name="facility_name" value="E-Commerce Warehouse"/>
+            <column name="carrier_event_id" value="FDX-CR-001"/>
+            <column name="event_timestamp" valueDate="2024-01-10T08:00:00"/>
+            <column name="created_date" valueDate="2024-01-10T08:00:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        
+        <insert tableName="tracking_events">
+            <column name="shipment_id" value="1"/>
+            <column name="status" value="PICKED_UP"/>
+            <column name="description" value="Package picked up by FedEx"/>
+            <column name="event_code" value="PU"/>
+            <column name="event_type" value="PICKUP"/>
+            <column name="location_city" value="Los Angeles"/>
+            <column name="location_state" value="CA"/>
+            <column name="location_country" value="US"/>
+            <column name="facility_name" value="FedEx Pickup Location"/>
+            <column name="carrier_event_id" value="FDX-PU-001"/>
+            <column name="event_timestamp" valueDate="2024-01-12T09:15:00"/>
+            <column name="created_date" valueDate="2024-01-12T09:15:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        
+        <insert tableName="tracking_events">
+            <column name="shipment_id" value="1"/>
+            <column name="status" value="IN_TRANSIT"/>
+            <column name="description" value="Package in transit to destination"/>
+            <column name="event_code" value="IT"/>
+            <column name="event_type" value="TRANSIT"/>
+            <column name="location_city" value="Phoenix"/>
+            <column name="location_state" value="AZ"/>
+            <column name="location_country" value="US"/>
+            <column name="facility_name" value="FedEx Phoenix Hub"/>
+            <column name="carrier_event_id" value="FDX-IT-001"/>
+            <column name="event_timestamp" valueDate="2024-01-13T02:30:00"/>
+            <column name="created_date" valueDate="2024-01-13T02:30:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        
+        <insert tableName="tracking_events">
+            <column name="shipment_id" value="1"/>
+            <column name="status" value="OUT_FOR_DELIVERY"/>
+            <column name="description" value="Package out for delivery"/>
+            <column name="event_code" value="OFD"/>
+            <column name="event_type" value="DELIVERY"/>
+            <column name="location_city" value="New York"/>
+            <column name="location_state" value="NY"/>
+            <column name="location_country" value="US"/>
+            <column name="facility_name" value="FedEx New York Delivery Center"/>
+            <column name="carrier_event_id" value="FDX-OFD-001"/>
+            <column name="is_delivery_attempt" value="true"/>
+            <column name="event_timestamp" valueDate="2024-01-14T08:00:00"/>
+            <column name="created_date" valueDate="2024-01-14T08:00:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        
+        <insert tableName="tracking_events">
+            <column name="shipment_id" value="1"/>
+            <column name="status" value="DELIVERED"/>
+            <column name="description" value="Package delivered successfully"/>
+            <column name="event_code" value="DL"/>
+            <column name="event_type" value="DELIVERY"/>
+            <column name="location_city" value="New York"/>
+            <column name="location_state" value="NY"/>
+            <column name="location_country" value="US"/>
+            <column name="facility_name" value="Customer Address"/>
+            <column name="carrier_event_id" value="FDX-DL-001"/>
+            <column name="notes" value="Signed by: John Doe"/>
+            <column name="is_delivery_attempt" value="true"/>
+            <column name="event_timestamp" valueDate="2024-01-14T14:30:00"/>
+            <column name="created_date" valueDate="2024-01-14T14:30:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        
+        <!-- Events for Shipment 2 (In Transit) -->
+        <insert tableName="tracking_events">
+            <column name="shipment_id" value="2"/>
+            <column name="status" value="CREATED"/>
+            <column name="description" value="Shipment created and ready for pickup"/>
+            <column name="event_code" value="CR"/>
+            <column name="event_type" value="CREATED"/>
+            <column name="location_city" value="Los Angeles"/>
+            <column name="location_state" value="CA"/>
+            <column name="location_country" value="US"/>
+            <column name="facility_name" value="E-Commerce Warehouse"/>
+            <column name="carrier_event_id" value="UPS-CR-002"/>
+            <column name="event_timestamp" valueDate="2024-01-17T14:20:00"/>
+            <column name="created_date" valueDate="2024-01-17T14:20:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        
+        <insert tableName="tracking_events">
+            <column name="shipment_id" value="2"/>
+            <column name="status" value="PICKED_UP"/>
+            <column name="description" value="Package picked up by UPS"/>
+            <column name="event_code" value="PU"/>
+            <column name="event_type" value="PICKUP"/>
+            <column name="location_city" value="Los Angeles"/>
+            <column name="location_state" value="CA"/>
+            <column name="location_country" value="US"/>
+            <column name="facility_name" value="UPS Customer Center"/>
+            <column name="carrier_event_id" value="UPS-PU-002"/>
+            <column name="event_timestamp" valueDate="2024-01-18T11:30:00"/>
+            <column name="created_date" valueDate="2024-01-18T11:30:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        
+        <insert tableName="tracking_events">
+            <column name="shipment_id" value="2"/>
+            <column name="status" value="IN_TRANSIT"/>
+            <column name="description" value="Package in transit - arrived at UPS facility"/>
+            <column name="event_code" value="IT"/>
+            <column name="event_type" value="TRANSIT"/>
+            <column name="location_city" value="Denver"/>
+            <column name="location_state" value="CO"/>
+            <column name="location_country" value="US"/>
+            <column name="facility_name" value="UPS Denver Hub"/>
+            <column name="carrier_event_id" value="UPS-IT-002"/>
+            <column name="event_timestamp" valueDate="2024-01-19T09:45:00"/>
+            <column name="created_date" valueDate="2024-01-19T09:45:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        
+        <!-- Events for Shipment 3 (Exception) -->
+        <insert tableName="tracking_events">
+            <column name="shipment_id" value="3"/>
+            <column name="status" value="CREATED"/>
+            <column name="description" value="Express shipment created"/>
+            <column name="event_code" value="CR"/>
+            <column name="event_type" value="CREATED"/>
+            <column name="location_city" value="Los Angeles"/>
+            <column name="location_state" value="CA"/>
+            <column name="location_country" value="US"/>
+            <column name="facility_name" value="E-Commerce Warehouse"/>
+            <column name="carrier_event_id" value="DHL-CR-003"/>
+            <column name="event_timestamp" valueDate="2024-01-19T10:30:00"/>
+            <column name="created_date" valueDate="2024-01-19T10:30:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        
+        <insert tableName="tracking_events">
+            <column name="shipment_id" value="3"/>
+            <column name="status" value="PICKED_UP"/>
+            <column name="description" value="Package picked up by DHL Express"/>
+            <column name="event_code" value="PU"/>
+            <column name="event_type" value="PICKUP"/>
+            <column name="location_city" value="Los Angeles"/>
+            <column name="location_state" value="CA"/>
+            <column name="location_country" value="US"/>
+            <column name="facility_name" value="DHL Express Service Point"/>
+            <column name="carrier_event_id" value="DHL-PU-003"/>
+            <column name="event_timestamp" valueDate="2024-01-20T16:45:00"/>
+            <column name="created_date" valueDate="2024-01-20T16:45:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        
+        <insert tableName="tracking_events">
+            <column name="shipment_id" value="3"/>
+            <column name="status" value="EXCEPTION"/>
+            <column name="description" value="Delivery exception - incorrect address"/>
+            <column name="event_code" value="EX"/>
+            <column name="event_type" value="EXCEPTION"/>
+            <column name="location_city" value="Miami"/>
+            <column name="location_state" value="FL"/>
+            <column name="location_country" value="US"/>
+            <column name="facility_name" value="DHL Miami Delivery Center"/>
+            <column name="carrier_event_id" value="DHL-EX-003"/>
+            <column name="notes" value="Address correction required. Customer contacted."/>
+            <column name="is_exception" value="true"/>
+            <column name="is_delivery_attempt" value="true"/>
+            <column name="event_timestamp" valueDate="2024-01-21T13:15:00"/>
+            <column name="created_date" valueDate="2024-01-21T13:15:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        
+    </changeSet>
+
+</databaseChangeLog>

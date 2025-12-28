@@ -1,0 +1,338 @@
+# Recommendation Service Configuration
+spring:
+  application:
+    name: recommendation-service
+  profiles:
+    active: dev
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    compatibility-verifier:
+      enabled: false
+
+  # MongoDB Configuration
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/recommendation_db
+      auto-index-creation: true
+      field-naming-strategy: org.springframework.data.mapping.model.SnakeCaseFieldNamingStrategy
+
+  # Redis Configuration
+  redis:
+    host: localhost
+    port: 6379
+    password: 
+    database: 0
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 20
+        max-idle: 10
+        min-idle: 5
+        max-wait: 2000ms
+
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: recommendation-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.ecommerce.*"
+        max.poll.records: 100
+        session.timeout.ms: 30000
+        heartbeat.interval.ms: 10000
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        acks: all
+        retries: 3
+        batch.size: 16384
+        linger.ms: 5
+        buffer.memory: 33554432
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        compression.type: snappy
+
+  # Cache Configuration
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000 # 1 hour default
+      cache-null-values: false
+
+# Server Configuration
+server:
+  port: 8087
+  servlet:
+    context-path: /
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 30
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+    metadata-map:
+      version: 1.0.0
+      description: "Product Recommendation Service with ML capabilities"
+
+# Management and Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,configprops
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
+      sla:
+        http.server.requests: 100ms, 500ms, 1s
+
+# Logging Configuration
+logging:
+  level:
+    com.ecommerce.recommendation: INFO
+    org.springframework.kafka: WARN
+    org.hibernate: WARN
+    org.springframework.cache: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/recommendation-service.log
+    max-size: 100MB
+    max-history: 30
+
+# OpenAPI Documentation
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  info:
+    title: "Recommendation Service API"
+    description: "Product recommendation service with machine learning capabilities"
+    version: "1.0.0"
+    contact:
+      name: "E-commerce Team"
+      email: "team@ecommerce.com"
+
+# Feign Client Configuration
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 5000
+        read-timeout: 10000
+        logger-level: basic
+      product-service:
+        connect-timeout: 3000
+        read-timeout: 8000
+      user-service:
+        connect-timeout: 3000
+        read-timeout: 5000
+  hystrix:
+    enabled: true
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+
+# Hystrix Configuration
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+      circuitBreaker:
+        requestVolumeThreshold: 20
+        errorThresholdPercentage: 50
+        sleepWindowInMilliseconds: 5000
+
+# Custom Application Configuration
+app:
+  recommendation:
+    # Algorithm weights
+    algorithm-weights:
+      collaborative-filtering: 0.4
+      content-based: 0.3
+      popularity-based: 0.2
+      similarity-based: 0.1
+    
+    # Recommendation limits
+    max-recommendations: 50
+    default-recommendations: 10
+    min-user-interactions: 5
+    min-similar-users: 5
+    
+    # Cache settings
+    cache:
+      personalized-ttl: 1800 # 30 minutes
+      similar-products-ttl: 7200 # 2 hours
+      category-recommendations-ttl: 3600 # 1 hour
+    
+    # ML model settings
+    ml:
+      similarity-threshold: 0.3
+      confidence-threshold: 0.5
+      diversity-factor: 0.3
+      freshness-weight: 0.1
+    
+    # Batch processing
+    batch:
+      user-behavior-batch-size: 1000
+      similarity-calculation-batch-size: 500
+      recommendation-generation-batch-size: 100
+    
+    # Cleanup settings
+    cleanup:
+      old-behaviors-days: 90
+      inactive-recommendations-days: 7
+      unused-similarities-days: 30
+
+  # External service URLs
+  services:
+    product-service:
+      url: http://product-service
+      timeout: 5000
+    user-service:
+      url: http://user-service
+      timeout: 3000
+    order-service:
+      url: http://order-service
+      timeout: 5000
+    cart-service:
+      url: http://cart-service
+      timeout: 3000
+
+# Distributed Tracing
+spring.sleuth:
+  sampler:
+    probability: 0.1
+  zipkin:
+    base-url: http://localhost:9411
+    enabled: true
+  web:
+    skip-pattern: "/actuator.*|/health.*|/info.*"
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        format_sql: true
+        generate_statistics: true
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
+  datasource:
+    url: jdbc:h2:mem:recommendation_dev;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+logging:
+  level:
+    com.ecommerce.recommendation: DEBUG
+    org.springframework.cache: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+app:
+  recommendation:
+    cache:
+      personalized-ttl: 300 # 5 minutes for development
+      similar-products-ttl: 600 # 10 minutes for development
+
+---
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        generate_statistics: false
+
+logging:
+  level:
+    com.ecommerce.recommendation: INFO
+    org.springframework.cache: WARN
+    org.hibernate: WARN
+    root: WARN
+
+spring.sleuth:
+  sampler:
+    probability: 0.01 # Lower sampling in production
+
+app:
+  recommendation:
+    cache:
+      personalized-ttl: 3600 # 1 hour in production
+      similar-products-ttl: 14400 # 4 hours in production
+
+---
+# Test Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+  redis:
+    host: localhost
+    port: 6370 # Different port for testing
+  kafka:
+    bootstrap-servers: localhost:9093 # Different port for testing
+
+logging:
+  level:
+    com.ecommerce.recommendation: DEBUG
+    org.springframework.test: DEBUG

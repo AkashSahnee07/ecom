@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <changeSet id="002-create-tracking-events-table" author="shipping-service">
+        <comment>Create tracking_events table for storing shipment tracking history</comment>
+        
+        <createTable tableName="tracking_events">
+            <!-- Primary Key -->
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <!-- Foreign Key to Shipments -->
+            <column name="shipment_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            
+            <!-- Event Information -->
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_code" type="VARCHAR(20)"/>
+            <column name="event_type" type="VARCHAR(50)"/>
+            
+            <!-- Location Information -->
+            <column name="location_city" type="VARCHAR(100)"/>
+            <column name="location_state" type="VARCHAR(50)"/>
+            <column name="location_country" type="VARCHAR(2)"/>
+            <column name="location_postal_code" type="VARCHAR(20)"/>
+            <column name="facility_name" type="VARCHAR(200)"/>
+            
+            <!-- Carrier Information -->
+            <column name="carrier_event_id" type="VARCHAR(100)"/>
+            <column name="carrier_timestamp" type="TIMESTAMP"/>
+            
+            <!-- Additional Details -->
+            <column name="notes" type="TEXT"/>
+            <column name="is_exception" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_delivery_attempt" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+            
+            <!-- Timestamps -->
+            <column name="event_timestamp" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            
+            <!-- Audit Fields -->
+            <column name="created_by" type="VARCHAR(50)"/>
+            <column name="last_modified_by" type="VARCHAR(50)"/>
+        </createTable>
+        
+        <!-- Add Foreign Key Constraint -->
+        <addForeignKeyConstraint
+            baseTableName="tracking_events"
+            baseColumnNames="shipment_id"
+            referencedTableName="shipments"
+            referencedColumnNames="id"
+            constraintName="fk_tracking_events_shipment_id"
+            onDelete="CASCADE"/>
+        
+        <!-- Add comments to table and important columns -->
+        <sql>
+            COMMENT ON TABLE tracking_events IS 'Table for storing tracking events and status updates for shipments';
+            COMMENT ON COLUMN tracking_events.shipment_id IS 'Foreign key reference to the shipments table';
+            COMMENT ON COLUMN tracking_events.status IS 'Status of the shipment at the time of this event';
+            COMMENT ON COLUMN tracking_events.description IS 'Human-readable description of the tracking event';
+            COMMENT ON COLUMN tracking_events.event_code IS 'Carrier-specific event code';
+            COMMENT ON COLUMN tracking_events.event_type IS 'Type of event (PICKUP, TRANSIT, DELIVERY, EXCEPTION, etc.)';
+            COMMENT ON COLUMN tracking_events.carrier_event_id IS 'Unique event ID from the carrier system';
+            COMMENT ON COLUMN tracking_events.is_exception IS 'Flag indicating if this event represents an exception or problem';
+            COMMENT ON COLUMN tracking_events.is_delivery_attempt IS 'Flag indicating if this event represents a delivery attempt';
+            COMMENT ON COLUMN tracking_events.event_timestamp IS 'When the actual tracking event occurred (carrier time)';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

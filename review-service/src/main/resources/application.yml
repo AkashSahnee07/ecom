@@ -1,0 +1,328 @@
+# Review Service Configuration
+spring:
+  application:
+    name: review-service
+  profiles:
+    active: dev
+  config:
+    import: optional:configserver:http://localhost:8888
+
+  # Database Configuration
+  datasource:
+    jdbc-url: jdbc:postgresql://localhost:5432/review_db
+    username: ecommerce
+    password: ecommerce123
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      leak-detection-threshold: 60000
+
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+        jdbc:
+          batch_size: 25
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
+
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+      batch-size: 16384
+      linger-ms: 5
+      buffer-memory: 33554432
+      enable-idempotence: true
+      compression-type: snappy
+    consumer:
+      group-id: review-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      fetch-min-size: 1
+      fetch-max-wait: 500
+      max-poll-records: 500
+      properties:
+        spring.json.trusted.packages: "com.ecommerce.*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: "java.lang.Object"
+
+  # File Upload Configuration
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+      enabled: true
+
+  # Cache Configuration
+  cache:
+    type: simple
+    cache-names:
+      - reviews
+      - review-stats
+      - moderation-queue
+
+# Server Configuration
+server:
+  port: 8089
+  servlet:
+    context-path: /
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+
+# Eureka Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 30
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+    metadata-map:
+      version: 1.0.0
+      description: "Product Review and Rating Service"
+
+# Management and Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,configprops
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: always
+    metrics:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
+      sla:
+        http.server.requests: 100ms, 200ms, 500ms, 1s, 2s
+
+# Logging Configuration
+logging:
+  level:
+    com.ecommerce.review: INFO
+    org.springframework.kafka: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
+  file:
+    name: logs/review-service.log
+    max-size: 100MB
+    max-history: 30
+
+# Distributed Tracing
+spring.sleuth:
+  zipkin:
+    base-url: http://localhost:9411
+  sampler:
+    probability: 1.0
+
+# Custom Application Properties
+app:
+  review:
+    # Image upload settings
+    image:
+      upload-dir: ./uploads/reviews
+      max-size: 10MB
+      allowed-types: jpg,jpeg,png,gif,webp
+      thumbnail-size: 200
+      max-images-per-review: 5
+    
+    # Moderation settings
+    moderation:
+      auto-approve-threshold: 0.8
+      spam-threshold: 0.7
+      profanity-filter-enabled: true
+      require-manual-review: false
+      max-pending-reviews: 1000
+    
+    # Rating settings
+    rating:
+      min-rating: 1
+      max-rating: 5
+      allow-half-ratings: false
+      require-purchase-verification: false
+    
+    # Notification settings
+    notification:
+      enabled: true
+      topics:
+        review-created: "review-events"
+        review-approved: "notification-events"
+        review-rejected: "notification-events"
+        moderation-alert: "moderation-events"
+        analytics-summary: "analytics-events"
+    
+    # Analytics settings
+    analytics:
+      enabled: true
+      batch-size: 100
+      processing-interval: 300000 # 5 minutes
+      retention-days: 90
+    
+    # Cache settings
+    cache:
+      review-ttl: 3600 # 1 hour
+      stats-ttl: 1800 # 30 minutes
+      featured-ttl: 7200 # 2 hours
+    
+    # Security settings
+    security:
+      rate-limit:
+        enabled: true
+        requests-per-minute: 60
+        requests-per-hour: 1000
+      ip-whitelist: []
+      require-authentication: true
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/review_db_dev
+    username: ecommerce
+    password: ecommerce123
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        generate_statistics: true
+
+logging:
+  level:
+    com.ecommerce.review: DEBUG
+    org.springframework.kafka: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+app:
+  review:
+    moderation:
+      auto-approve-threshold: 0.5
+      require-manual-review: false
+    security:
+      rate-limit:
+        enabled: false
+
+---
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/review_db_prod}
+    username: ${DB_USERNAME:ecommerce}
+    password: ${DB_PASSWORD:ecommerce123}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        generate_statistics: false
+
+logging:
+  level:
+    com.ecommerce.review: INFO
+    org.springframework.kafka: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+  file:
+    name: /var/log/review-service/review-service.log
+
+spring.sleuth:
+  sampler:
+    probability: 0.1
+
+app:
+  review:
+    moderation:
+      auto-approve-threshold: 0.9
+      require-manual-review: true
+    security:
+      rate-limit:
+        enabled: true
+        requests-per-minute: 30
+        requests-per-hour: 500
+
+---
+# Test Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+
+app:
+  review:
+    image:
+      upload-dir: ./test-uploads
+    moderation:
+      auto-approve-threshold: 0.5
+    notification:
+      enabled: false
+    analytics:
+      enabled: false
+    security:
+      rate-limit:
+        enabled: false

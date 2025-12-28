@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Order Has Shipped!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        .shipping-status {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .shipping-status h2 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+        .shipping-status .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .tracking-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        .tracking-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #28a745;
+            background-color: #e8f5e8;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 15px 0;
+            letter-spacing: 1px;
+        }
+        .order-summary {
+            margin: 20px 0;
+        }
+        .order-summary table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .order-summary th,
+        .order-summary td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .order-summary th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #218838;
+        }
+        .delivery-info {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            background-color: #e9ecef;
+            border-radius: 10px;
+            height: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #28a745, #20c997);
+            height: 100%;
+            width: 60%;
+            border-radius: 10px;
+        }
+        .timeline {
+            margin: 20px 0;
+        }
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px 0;
+        }
+        .timeline-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+        }
+        .timeline-icon.completed {
+            background-color: #28a745;
+        }
+        .timeline-icon.current {
+            background-color: #ffc107;
+        }
+        .timeline-icon.pending {
+            background-color: #6c757d;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 14px;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 20px;
+            }
+            .shipping-status .icon {
+                font-size: 36px;
+            }
+            .button {
+                display: block;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">E-Commerce Platform</div>
+            <h1>Your Order Has Shipped!</h1>
+        </div>
+        
+        <div class="content">
+            <div class="shipping-status">
+                <div class="icon">📦</div>
+                <h2>Great News!</h2>
+                <p>Your order is on its way to you</p>
+            </div>
+            
+            <p>Hi <span th:text="${customerName}">Customer</span>,</p>
+            
+            <p>We're excited to let you know that your order has been shipped and is on its way to you!</p>
+            
+            <div class="tracking-info">
+                <h3>📍 Tracking Information</h3>
+                <p><strong>Tracking Number:</strong></p>
+                <div class="tracking-number" th:text="${trackingNumber}">1Z999AA1234567890</div>
+                <p><strong>Carrier:</strong> <span th:text="${carrier ?: 'Standard Shipping'}">Standard Shipping</span></p>
+                <p><strong>Shipped Date:</strong> <span th:text="${shippedDate}">January 16, 2024</span></p>
+                <p><strong>Estimated Delivery:</strong> <span th:text="${estimatedDelivery}">January 20, 2024</span></p>
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="#" th:href="${trackingLink ?: '#'}" class="button">🔍 Track Your Package</a>
+            </div>
+            
+            <div class="delivery-info">
+                <h4>📍 Delivery Address</h4>
+                <p th:text="${shippingAddress}">
+                    John Doe<br>
+                    123 Main Street<br>
+                    Anytown, ST 12345
+                </p>
+            </div>
+            
+            <div class="timeline">
+                <h4>📋 Shipping Progress</h4>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon completed">✓</div>
+                    <div>
+                        <strong>Order Confirmed</strong><br>
+                        <small th:text="${orderDate}">Jan 15, 2024</small>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon completed">✓</div>
+                    <div>
+                        <strong>Order Processed</strong><br>
+                        <small th:text="${processedDate ?: 'Jan 16, 2024'}">Jan 16, 2024</small>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon current">🚚</div>
+                    <div>
+                        <strong>In Transit</strong><br>
+                        <small>Currently shipping to you</small>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon pending">📦</div>
+                    <div>
+                        <strong>Out for Delivery</strong><br>
+                        <small>Coming soon</small>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon pending">🏠</div>
+                    <div>
+                        <strong>Delivered</strong><br>
+                        <small th:text="${estimatedDelivery}">Jan 20, 2024</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="order-summary">
+                <h3>📋 Order Summary</h3>
+                <p><strong>Order Number:</strong> <span th:text="${orderId}">#12345</span></p>
+                
+                <table th:if="${orderItems}">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${orderItems}">
+                            <td th:text="${item.name}">Product Name</td>
+                            <td th:text="${item.quantity}">1</td>
+                            <td th:text="'$' + ${item.price}">$99.99</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="background-color: #e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <h4>💡 Delivery Tips</h4>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                    <li>Someone should be available to receive the package</li>
+                    <li>Check your tracking link for real-time updates</li>
+                    <li>Contact us immediately if there are any delivery issues</li>
+                    <li>Package will require signature upon delivery</li>
+                </ul>
+            </div>
+            
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <h4>📞 Need Help?</h4>
+                <p>If you have any questions about your shipment:</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li>📧 Email: shipping@ecommerce.com</li>
+                    <li>📞 Phone: 1-800-123-4567</li>
+                    <li>💬 Live Chat: Available 24/7</li>
+                </ul>
+            </div>
+            
+            <p>Thank you for your order! We hope you love your purchase.</p>
+            
+            <p>Best regards,<br>
+            The E-Commerce Shipping Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>This email was sent to <span th:text="${recipientEmail}">customer@example.com</span></p>
+            <p>© 2024 E-Commerce Platform. All rights reserved.</p>
+            <p>123 Commerce Street, Business City, BC 12345</p>
+            <p>
+                <a href="#" style="color: #28a745; text-decoration: none;">Track Package</a> | 
+                <a href="#" style="color: #28a745; text-decoration: none;">Contact Support</a> | 
+                <a href="#" style="color: #28a745; text-decoration: none;">Unsubscribe</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

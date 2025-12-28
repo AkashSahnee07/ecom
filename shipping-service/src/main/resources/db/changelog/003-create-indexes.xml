@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <changeSet id="003-create-indexes" author="shipping-service">
+        <comment>Create indexes for optimal query performance</comment>
+        
+        <!-- Shipments Table Indexes -->
+        
+        <!-- Index for tracking number lookups (already unique, but explicit index) -->
+        <createIndex tableName="shipments" indexName="idx_shipments_tracking_number">
+            <column name="tracking_number"/>
+        </createIndex>
+        
+        <!-- Index for order ID lookups -->
+        <createIndex tableName="shipments" indexName="idx_shipments_order_id">
+            <column name="order_id"/>
+        </createIndex>
+        
+        <!-- Index for status queries -->
+        <createIndex tableName="shipments" indexName="idx_shipments_status">
+            <column name="status"/>
+        </createIndex>
+        
+        <!-- Index for carrier queries -->
+        <createIndex tableName="shipments" indexName="idx_shipments_carrier">
+            <column name="carrier"/>
+        </createIndex>
+        
+        <!-- Index for carrier tracking number -->
+        <createIndex tableName="shipments" indexName="idx_shipments_carrier_tracking_number">
+            <column name="carrier_tracking_number"/>
+        </createIndex>
+        
+        <!-- Composite index for status and carrier queries -->
+        <createIndex tableName="shipments" indexName="idx_shipments_status_carrier">
+            <column name="status"/>
+            <column name="carrier"/>
+        </createIndex>
+        
+        <!-- Index for destination city queries -->
+        <createIndex tableName="shipments" indexName="idx_shipments_destination_city">
+            <column name="destination_city"/>
+        </createIndex>
+        
+        <!-- Index for destination state queries -->
+        <createIndex tableName="shipments" indexName="idx_shipments_destination_state">
+            <column name="destination_state"/>
+        </createIndex>
+        
+        <!-- Index for destination country queries -->
+        <createIndex tableName="shipments" indexName="idx_shipments_destination_country">
+            <column name="destination_country"/>
+        </createIndex>
+        
+        <!-- Composite index for destination location queries -->
+        <createIndex tableName="shipments" indexName="idx_shipments_destination_location">
+            <column name="destination_city"/>
+            <column name="destination_state"/>
+            <column name="destination_country"/>
+        </createIndex>
+        
+        <!-- Index for created date queries (for date range searches) -->
+        <createIndex tableName="shipments" indexName="idx_shipments_created_date">
+            <column name="created_date"/>
+        </createIndex>
+        
+        <!-- Index for estimated delivery date queries -->
+        <createIndex tableName="shipments" indexName="idx_shipments_estimated_delivery_date">
+            <column name="estimated_delivery_date"/>
+        </createIndex>
+        
+        <!-- Index for actual delivery date queries -->
+        <createIndex tableName="shipments" indexName="idx_shipments_actual_delivery_date">
+            <column name="actual_delivery_date"/>
+        </createIndex>
+        
+        <!-- Index for shipped date queries -->
+        <createIndex tableName="shipments" indexName="idx_shipments_shipped_date">
+            <column name="shipped_date"/>
+        </createIndex>
+        
+        <!-- Composite index for overdue shipments (status + estimated delivery date) -->
+        <createIndex tableName="shipments" indexName="idx_shipments_overdue">
+            <column name="status"/>
+            <column name="estimated_delivery_date"/>
+        </createIndex>
+        
+        <!-- Tracking Events Table Indexes -->
+        
+        <!-- Index for shipment ID lookups (foreign key) -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_shipment_id">
+            <column name="shipment_id"/>
+        </createIndex>
+        
+        <!-- Index for status queries -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_status">
+            <column name="status"/>
+        </createIndex>
+        
+        <!-- Index for event timestamp queries -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_event_timestamp">
+            <column name="event_timestamp"/>
+        </createIndex>
+        
+        <!-- Index for created date queries -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_created_date">
+            <column name="created_date"/>
+        </createIndex>
+        
+        <!-- Composite index for shipment events by timestamp -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_shipment_timestamp">
+            <column name="shipment_id"/>
+            <column name="event_timestamp"/>
+        </createIndex>
+        
+        <!-- Composite index for shipment events by status -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_shipment_status">
+            <column name="shipment_id"/>
+            <column name="status"/>
+        </createIndex>
+        
+        <!-- Index for location city queries -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_location_city">
+            <column name="location_city"/>
+        </createIndex>
+        
+        <!-- Index for location state queries -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_location_state">
+            <column name="location_state"/>
+        </createIndex>
+        
+        <!-- Index for location country queries -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_location_country">
+            <column name="location_country"/>
+        </createIndex>
+        
+        <!-- Index for event code queries -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_event_code">
+            <column name="event_code"/>
+        </createIndex>
+        
+        <!-- Index for event type queries -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_event_type">
+            <column name="event_type"/>
+        </createIndex>
+        
+        <!-- Index for exception events -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_is_exception">
+            <column name="is_exception"/>
+        </createIndex>
+        
+        <!-- Index for delivery attempts -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_is_delivery_attempt">
+            <column name="is_delivery_attempt"/>
+        </createIndex>
+        
+        <!-- Index for carrier event ID (for deduplication) -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_carrier_event_id">
+            <column name="carrier_event_id"/>
+        </createIndex>
+        
+        <!-- Composite index for date range queries on events -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_date_range">
+            <column name="event_timestamp"/>
+            <column name="created_date"/>
+        </createIndex>
+        
+        <!-- Composite index for exception events by shipment -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_shipment_exception">
+            <column name="shipment_id"/>
+            <column name="is_exception"/>
+            <column name="event_timestamp"/>
+        </createIndex>
+        
+        <!-- Composite index for latest events per shipment -->
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_latest">
+            <column name="shipment_id"/>
+            <column name="event_timestamp" descending="true"/>
+        </createIndex>
+        
+    </changeSet>
+
+</databaseChangeLog>

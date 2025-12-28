@@ -1,0 +1,13 @@
+# Log and PID files
+*.log
+*.pid
+logs/*.log
+logs/*.pid
+
+# Target directories
+target/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
