@@ -3,6 +3,9 @@ package com.ecommerce.review.controller;
 import com.ecommerce.review.entity.Review;
 import com.ecommerce.review.service.ModerationService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,6 +22,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/reviews/moderation")
 @CrossOrigin(origins = "*")
+@Tag(name = "Review Moderation", description = "Operations for moderating product reviews")
 public class ModerationController {
 
     private static final Logger log = LoggerFactory.getLogger(ModerationController.class);
@@ -33,9 +37,10 @@ public class ModerationController {
      * Manually approve a review.
      */
     @PostMapping("/{reviewId}/approve")
+    @Operation(summary = "Approve review", description = "Manually approve a review")
     public ResponseEntity<Void> approveReview(
-            @PathVariable String reviewId,
-            @RequestParam String moderatorId) {
+            @Parameter(description = "Review ID") @PathVariable String reviewId,
+            @Parameter(description = "Moderator ID") @RequestParam String moderatorId) {
         
         try {
             moderationService.approveReview(reviewId, moderatorId);
@@ -53,10 +58,11 @@ public class ModerationController {
      * Manually reject a review.
      */
     @PostMapping("/{reviewId}/reject")
+    @Operation(summary = "Reject review", description = "Manually reject a review")
     public ResponseEntity<Void> rejectReview(
-            @PathVariable String reviewId,
-            @RequestParam String moderatorId,
-            @RequestParam String reason) {
+            @Parameter(description = "Review ID") @PathVariable String reviewId,
+            @Parameter(description = "Moderator ID") @RequestParam String moderatorId,
+            @Parameter(description = "Rejection reason") @RequestParam String reason) {
         
         try {
             moderationService.rejectReview(reviewId, moderatorId, reason);
@@ -74,9 +80,10 @@ public class ModerationController {
      * Mark a review as spam.
      */
     @PostMapping("/{reviewId}/spam")
+    @Operation(summary = "Mark as spam", description = "Mark a review as spam")
     public ResponseEntity<Void> markAsSpam(
-            @PathVariable String reviewId,
-            @RequestParam String moderatorId) {
+            @Parameter(description = "Review ID") @PathVariable String reviewId,
+            @Parameter(description = "Moderator ID") @RequestParam String moderatorId) {
         
         try {
             moderationService.markAsSpam(reviewId, moderatorId);
@@ -94,10 +101,11 @@ public class ModerationController {
      * Hide a review.
      */
     @PostMapping("/{reviewId}/hide")
+    @Operation(summary = "Hide review", description = "Hide a review from public view")
     public ResponseEntity<Void> hideReview(
-            @PathVariable String reviewId,
-            @RequestParam String moderatorId,
-            @RequestParam String reason) {
+            @Parameter(description = "Review ID") @PathVariable String reviewId,
+            @Parameter(description = "Moderator ID") @RequestParam String moderatorId,
+            @Parameter(description = "Reason for hiding") @RequestParam String reason) {
         
         try {
             moderationService.hideReview(reviewId, moderatorId, reason);
@@ -115,8 +123,9 @@ public class ModerationController {
      * Get reviews pending moderation.
      */
     @GetMapping("/pending")
+    @Operation(summary = "Get pending reviews", description = "Get list of reviews pending moderation")
     public ResponseEntity<List<Review>> getReviewsPendingModeration(
-            @RequestParam(defaultValue = "50") int limit) {
+            @Parameter(description = "Limit number of results") @RequestParam(defaultValue = "50") int limit) {
         
         try {
             List<Review> reviews = moderationService.getReviewsPendingModeration(limit);
@@ -131,6 +140,7 @@ public class ModerationController {
      * Get moderation statistics.
      */
     @GetMapping("/stats")
+    @Operation(summary = "Get moderation stats", description = "Get statistics about moderation activities")
     public ResponseEntity<ModerationService.ModerationStats> getModerationStats() {
         try {
             ModerationService.ModerationStats stats = moderationService.getModerationStats();

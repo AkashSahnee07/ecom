@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
 @RequestMapping("/auth")
@@ -38,12 +35,14 @@ public class AuthController {
     }
     
     @PostMapping("/logout")
+    @Operation(summary = "User Logout", description = "Logs out the user and invalidates the token")
     public ResponseEntity<Void> logout(@RequestHeader("Authorization") String token) {
         authService.logout(token);
         return ResponseEntity.ok().build();
     }
     
     @PostMapping("/validate")
+    @Operation(summary = "Validate Token", description = "Validates the JWT token")
     public ResponseEntity<Boolean> validateToken(@RequestParam String token) {
         boolean isValid = authService.validateToken(token);
         return ResponseEntity.ok(isValid);

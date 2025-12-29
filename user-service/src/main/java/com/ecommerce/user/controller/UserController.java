@@ -46,6 +46,7 @@ public class UserController {
     
     @GetMapping("/username/{username}")
     @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
+    @Operation(summary = "Get user by username", description = "Retrieves user details by username")
     public ResponseEntity<UserResponseDto> getUserByUsername(@PathVariable String username) {
         UserResponseDto user = userService.getUserByUsername(username);
         return ResponseEntity.ok(user);
@@ -53,6 +54,7 @@ public class UserController {
     
     @GetMapping("/email/{email}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get user by email", description = "Retrieves user details by email")
     public ResponseEntity<UserResponseDto> getUserByEmail(@PathVariable String email) {
         UserResponseDto user = userService.getUserByEmail(email);
         return ResponseEntity.ok(user);
@@ -60,6 +62,7 @@ public class UserController {
     
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get all users", description = "Retrieves a list of all users")
     public ResponseEntity<List<UserResponseDto>> getAllUsers() {
         List<UserResponseDto> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
@@ -67,6 +70,7 @@ public class UserController {
     
     @GetMapping("/role/{role}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get users by role", description = "Retrieves a list of users with a specific role")
     public ResponseEntity<List<UserResponseDto>> getUsersByRole(@PathVariable User.Role role) {
         List<UserResponseDto> users = userService.getUsersByRole(role);
         return ResponseEntity.ok(users);
@@ -74,6 +78,7 @@ public class UserController {
     
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    @Operation(summary = "Update user", description = "Updates user details")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, 
                                                      @Valid @RequestBody UserUpdateDto updateDto) {
         UserResponseDto user = userService.updateUser(id, updateDto);
@@ -82,6 +87,7 @@ public class UserController {
     
     @PutMapping("/{id}/deactivate")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Deactivate user", description = "Deactivates a user account")
     public ResponseEntity<Void> deactivateUser(@PathVariable Long id) {
         userService.deactivateUser(id);
         return ResponseEntity.ok().build();
@@ -89,12 +95,14 @@ public class UserController {
     
     @PutMapping("/{id}/activate")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Activate user", description = "Activates a user account")
     public ResponseEntity<Void> activateUser(@PathVariable Long id) {
         userService.activateUser(id);
         return ResponseEntity.ok().build();
     }
     
     @PostMapping("/validate")
+    @Operation(summary = "Validate user credentials", description = "Validates username and password")
     public ResponseEntity<Boolean> validateUser(@RequestParam String username, 
                                                @RequestParam String password) {
         boolean isValid = userService.validateUser(username, password);
