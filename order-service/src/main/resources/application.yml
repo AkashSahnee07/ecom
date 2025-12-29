@@ -108,3 +108,9 @@ app:
     jwt:
       secret: ${JWT_SECRET:mySecretKey}
       expiration: 86400000
+
+springdoc:
+  api-docs:
+    path: /orders/v3/api-docs
+  swagger-ui:
+    path: /orders/swagger-ui.html

@@ -98,6 +98,12 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
+
+springdoc:
+  api-docs:
+    path: /reviews/v3/api-docs
+  swagger-ui:
+    path: /reviews/swagger-ui.html
     registry-fetch-interval-seconds: 30
   instance:
     prefer-ip-address: true

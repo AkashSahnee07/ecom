@@ -77,3 +77,9 @@ logging:
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: logs/product-service.log
+
+springdoc:
+  api-docs:
+    path: /products/v3/api-docs
+  swagger-ui:
+    path: /products/swagger-ui.html

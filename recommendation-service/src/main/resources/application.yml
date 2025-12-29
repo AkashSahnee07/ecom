@@ -131,9 +131,9 @@ logging:
 # OpenAPI Documentation
 springdoc:
   api-docs:
-    path: /api-docs
+    path: /recommendations/v3/api-docs
   swagger-ui:
-    path: /swagger-ui.html
+    path: /recommendations/swagger-ui.html
     enabled: true
   info:
     title: "Recommendation Service API"

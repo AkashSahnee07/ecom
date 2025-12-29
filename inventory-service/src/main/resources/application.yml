@@ -134,3 +134,9 @@ app:
     order-service:
       url: http://localhost:8085
       timeout: 5000
+
+springdoc:
+  api-docs:
+    path: /inventory/v3/api-docs
+  swagger-ui:
+    path: /inventory/swagger-ui.html

@@ -108,3 +108,9 @@ app:
       cart-item-added: cart-item-added
       cart-item-removed: cart-item-removed
       cart-cleared: cart-cleared
+
+springdoc:
+  api-docs:
+    path: /cart/v3/api-docs
+  swagger-ui:
+    path: /cart/swagger-ui.html

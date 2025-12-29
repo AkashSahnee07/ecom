@@ -79,6 +79,16 @@ spring:
     encoding: UTF-8
     prefix: classpath:/templates/
     suffix: .html
+  
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+springdoc:
+  api-docs:
+    path: /notifications/v3/api-docs
+  swagger-ui:
+    path: /notifications/swagger-ui.html
 
 # Eureka Configuration
 eureka:

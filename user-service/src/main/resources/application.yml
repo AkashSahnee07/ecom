@@ -75,3 +75,9 @@ logging:
     com.ecommerce.user: DEBUG
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
+
+springdoc:
+  api-docs:
+    path: /users/v3/api-docs
+  swagger-ui:
+    path: /users/swagger-ui.html

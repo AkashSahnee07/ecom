@@ -251,9 +251,9 @@ kafka:
 # OpenAPI Documentation
 springdoc:
   api-docs:
-    path: /api-docs
+    path: /shipping/v3/api-docs
   swagger-ui:
-    path: /swagger-ui.html
+    path: /shipping/swagger-ui.html
     enabled: true
   info:
     title: Shipping Service API
