@@ -12,17 +12,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 @CrossOrigin(origins = "*")
+@Tag(name = "User Management", description = "APIs for managing users")
+@SecurityRequirement(name = "bearerAuth")
 public class UserController {
     
     @Autowired
     private UserService userService;
     
     @PostMapping("/register")
+    @Operation(summary = "Register a new user", description = "Creates a new user account")
+    @SecurityRequirement(name = "") // Public endpoint
     public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRegistrationDto registrationDto) {
         UserResponseDto user = userService.registerUser(registrationDto);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
@@ -30,6 +38,7 @@ public class UserController {
     
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    @Operation(summary = "Get user by ID", description = "Retrieves user details by ID")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
         UserResponseDto user = userService.getUserById(id);
         return ResponseEntity.ok(user);
