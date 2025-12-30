@@ -25,7 +25,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/shipping")
+@RequestMapping("/api/shipping")
 @Tag(name = "Shipping", description = "Shipping management operations")
 @Validated
 public class ShippingController {

@@ -2,6 +2,8 @@ package com.ecommerce.product.controller;
 
 import com.ecommerce.product.dto.*;
 import com.ecommerce.product.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/products")
 @CrossOrigin(origins = "*")
+@Tag(name = "Product Management", description = "APIs for managing products")
 public class ProductController {
     
     @Autowired
@@ -25,6 +28,7 @@ public class ProductController {
     
     // Create product
     @PostMapping
+    @Operation(summary = "Create Product", description = "Creates a new product")
     public ResponseEntity<ProductResponseDto> createProduct(@Valid @RequestBody ProductCreateDto createDto) {
         ProductResponseDto product = productService.createProduct(createDto);
         return new ResponseEntity<>(product, HttpStatus.CREATED);
@@ -32,6 +36,7 @@ public class ProductController {
     
     // Get product by ID
     @GetMapping("/{id}")
+    @Operation(summary = "Get Product by ID", description = "Retrieves product details by ID")
     public ResponseEntity<ProductResponseDto> getProductById(@PathVariable Long id) {
         ProductResponseDto product = productService.getProductById(id);
         return ResponseEntity.ok(product);
@@ -39,6 +44,7 @@ public class ProductController {
     
     // Get product by SKU
     @GetMapping("/sku/{sku}")
+    @Operation(summary = "Get Product by SKU", description = "Retrieves product details by SKU")
     public ResponseEntity<ProductResponseDto> getProductBySku(@PathVariable String sku) {
         ProductResponseDto product = productService.getProductBySku(sku);
         return ResponseEntity.ok(product);
@@ -46,6 +52,7 @@ public class ProductController {
     
     // Get all products with pagination
     @GetMapping
+    @Operation(summary = "Get All Products", description = "Retrieves all products with pagination")
     public ResponseEntity<Page<ProductResponseDto>> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -62,6 +69,7 @@ public class ProductController {
     
     // Search products
     @GetMapping("/search")
+    @Operation(summary = "Search Products", description = "Searches products by keyword")
     public ResponseEntity<Page<ProductResponseDto>> searchProducts(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
@@ -79,6 +87,7 @@ public class ProductController {
     
     // Advanced search with filters
     @PostMapping("/search/advanced")
+    @Operation(summary = "Advanced Search", description = "Searches products using advanced filters")
     public ResponseEntity<Page<ProductResponseDto>> searchWithFilters(
             @RequestBody ProductSearchDto searchDto,
             @RequestParam(defaultValue = "0") int page,
@@ -96,6 +105,7 @@ public class ProductController {
     
     // Get products by category
     @GetMapping("/category/{categoryId}")
+    @Operation(summary = "Get Products by Category", description = "Retrieves products for a specific category")
     public ResponseEntity<Page<ProductResponseDto>> getProductsByCategory(
             @PathVariable Long categoryId,
             @RequestParam(defaultValue = "0") int page,
@@ -113,6 +123,7 @@ public class ProductController {
     
     // Get products by brand
     @GetMapping("/brand/{brand}")
+    @Operation(summary = "Get Products by Brand", description = "Retrieves products for a specific brand")
     public ResponseEntity<Page<ProductResponseDto>> getProductsByBrand(
             @PathVariable String brand,
             @RequestParam(defaultValue = "0") int page,
@@ -130,6 +141,7 @@ public class ProductController {
     
     // Get products by price range
     @GetMapping("/price-range")
+    @Operation(summary = "Get Products by Price Range", description = "Retrieves products within a specific price range")
     public ResponseEntity<Page<ProductResponseDto>> getProductsByPriceRange(
             @RequestParam BigDecimal minPrice,
             @RequestParam BigDecimal maxPrice,
@@ -148,6 +160,7 @@ public class ProductController {
     
     // Get featured products
     @GetMapping("/featured")
+    @Operation(summary = "Get Featured Products", description = "Retrieves featured products")
     public ResponseEntity<Page<ProductResponseDto>> getFeaturedProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -164,6 +177,7 @@ public class ProductController {
     
     // Get top-rated products
     @GetMapping("/top-rated")
+    @Operation(summary = "Get Top Rated Products", description = "Retrieves top rated products")
     public ResponseEntity<Page<ProductResponseDto>> getTopRatedProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -175,6 +189,7 @@ public class ProductController {
     
     // Get recent products
     @GetMapping("/recent")
+    @Operation(summary = "Get Recent Products", description = "Retrieves recently added products")
     public ResponseEntity<Page<ProductResponseDto>> getRecentProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -186,6 +201,7 @@ public class ProductController {
     
     // Get low stock products
     @GetMapping("/low-stock")
+    @Operation(summary = "Get Low Stock Products", description = "Retrieves products with low stock")
     public ResponseEntity<List<ProductResponseDto>> getLowStockProducts(
             @RequestParam(defaultValue = "10") Integer threshold) {
         List<ProductResponseDto> products = productService.getLowStockProducts(threshold);
@@ -194,6 +210,7 @@ public class ProductController {
     
     // Update product
     @PutMapping("/{id}")
+    @Operation(summary = "Update Product", description = "Updates an existing product")
     public ResponseEntity<ProductResponseDto> updateProduct(
             @PathVariable Long id, 
             @Valid @RequestBody ProductUpdateDto updateDto) {
@@ -203,6 +220,7 @@ public class ProductController {
     
     // Update stock quantity
     @PatchMapping("/{id}/stock")
+    @Operation(summary = "Update Product Stock", description = "Updates the stock quantity of a product")
     public ResponseEntity<ProductResponseDto> updateStock(
             @PathVariable Long id, 
             @RequestParam Integer quantity) {
@@ -212,6 +230,7 @@ public class ProductController {
     
     // Activate product
     @PatchMapping("/{id}/activate")
+    @Operation(summary = "Activate Product", description = "Activates a product")
     public ResponseEntity<Void> activateProduct(@PathVariable Long id) {
         productService.activateProduct(id);
         return ResponseEntity.ok().build();
@@ -219,6 +238,7 @@ public class ProductController {
     
     // Deactivate product
     @PatchMapping("/{id}/deactivate")
+    @Operation(summary = "Deactivate Product", description = "Deactivates a product")
     public ResponseEntity<Void> deactivateProduct(@PathVariable Long id) {
         productService.deactivateProduct(id);
         return ResponseEntity.ok().build();

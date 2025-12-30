@@ -2,6 +2,8 @@ package com.ecommerce.cart.controller;
 
 import com.ecommerce.cart.dto.*;
 import com.ecommerce.cart.service.CartService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,20 +11,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/cart")
+@RequestMapping("/api/cart")
 @CrossOrigin(origins = "*")
+@Tag(name = "Cart Management", description = "APIs for managing shopping carts")
 public class CartController {
     
     @Autowired
     private CartService cartService;
     
     @GetMapping("/{userId}")
+    @Operation(summary = "Get cart by User ID", description = "Retrieves the shopping cart for a specific user")
     public ResponseEntity<CartResponseDto> getCart(@PathVariable String userId) {
         CartResponseDto cart = cartService.getOrCreateCart(Long.parseLong(userId));
         return ResponseEntity.ok(cart);
     }
     
     @PostMapping("/{userId}/items")
+    @Operation(summary = "Add item to cart", description = "Adds a product to the user's cart")
     public ResponseEntity<CartResponseDto> addToCart(
             @PathVariable String userId,
             @Valid @RequestBody AddToCartDto addToCartDto) {
@@ -31,6 +36,7 @@ public class CartController {
     }
     
     @PutMapping("/{userId}/items/{productId}")
+    @Operation(summary = "Update item quantity", description = "Updates the quantity of a specific product in the cart")
     public ResponseEntity<CartResponseDto> updateItemQuantity(
             @PathVariable String userId,
             @PathVariable String productId,
@@ -40,6 +46,7 @@ public class CartController {
     }
     
     @DeleteMapping("/{userId}/items/{productId}")
+    @Operation(summary = "Remove item from cart", description = "Removes a product from the user's cart")
     public ResponseEntity<CartResponseDto> removeFromCart(
             @PathVariable String userId,
             @PathVariable String productId) {
@@ -48,30 +55,35 @@ public class CartController {
     }
     
     @DeleteMapping("/{userId}/clear")
+    @Operation(summary = "Clear cart", description = "Removes all items from the user's cart")
     public ResponseEntity<Void> clearCart(@PathVariable String userId) {
         cartService.clearCart(Long.parseLong(userId));
         return ResponseEntity.noContent().build();
     }
     
     @DeleteMapping("/{userId}")
+    @Operation(summary = "Delete cart", description = "Completely deletes the user's cart")
     public ResponseEntity<Void> deleteCart(@PathVariable String userId) {
         cartService.deleteCart(Long.parseLong(userId));
         return ResponseEntity.noContent().build();
     }
     
     @GetMapping("/{userId}/summary")
+    @Operation(summary = "Get cart summary", description = "Retrieves a summary of the cart including total price and items")
     public ResponseEntity<CartSummaryDto> getCartSummary(@PathVariable String userId) {
         CartSummaryDto summary = cartService.getCartSummary(Long.parseLong(userId));
         return ResponseEntity.ok(summary);
     }
     
     @GetMapping("/{userId}/exists")
+    @Operation(summary = "Check if cart exists", description = "Checks if a cart exists for the given user")
     public ResponseEntity<Boolean> cartExists(@PathVariable String userId) {
         boolean exists = cartService.cartExists(Long.parseLong(userId));
         return ResponseEntity.ok(exists);
     }
     
     @PostMapping("/{userId}/merge")
+    @Operation(summary = "Merge guest cart", description = "Merges a guest cart into the user's main cart")
     public ResponseEntity<CartResponseDto> mergeGuestCart(
             @PathVariable String userId,
             @Valid @RequestBody CartMergeDto cartMergeDto) {
@@ -80,6 +92,7 @@ public class CartController {
     }
     
     @GetMapping("/health")
+    @Operation(summary = "Health check", description = "Checks if the cart service is running")
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("Cart Service is running");
     }

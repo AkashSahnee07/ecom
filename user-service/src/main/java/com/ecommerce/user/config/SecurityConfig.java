@@ -53,7 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/validate").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**", "/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/users/v3/api-docs/**", "/v3/api-docs/**", "/api-docs/**", "/users/swagger-ui/**", "/swagger-ui/**", "/users/swagger-ui.html", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 );
         

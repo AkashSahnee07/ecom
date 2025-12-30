@@ -4,6 +4,8 @@ import com.ecommerce.inventory.dto.InventoryResponseDto;
 import com.ecommerce.inventory.dto.StockAdjustmentDto;
 import com.ecommerce.inventory.dto.StockReservationDto;
 import com.ecommerce.inventory.service.InventoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,8 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/inventory")
+@RequestMapping("/api/v1/inventory")
 @CrossOrigin(origins = "*")
+@Tag(name = "Inventory Management", description = "APIs for managing inventory stock")
 public class InventoryController {
     
     @Autowired
@@ -27,6 +30,7 @@ public class InventoryController {
     
     // Create or update inventory
     @PostMapping
+    @Operation(summary = "Create or Update Inventory", description = "Creates new inventory record or updates existing one")
     public ResponseEntity<InventoryResponseDto> createOrUpdateInventory(
             @RequestParam String productId,
             @RequestParam String warehouseId,
@@ -43,6 +47,7 @@ public class InventoryController {
     
     // Get inventory by product and warehouse
     @GetMapping("/product/{productId}/warehouse/{warehouseId}")
+    @Operation(summary = "Get Inventory", description = "Retrieves inventory details for a specific product in a warehouse")
     public ResponseEntity<InventoryResponseDto> getInventory(
             @PathVariable String productId,
             @PathVariable String warehouseId) {
@@ -53,6 +58,7 @@ public class InventoryController {
     
     // Get all inventory for a product across warehouses
     @GetMapping("/product/{productId}")
+    @Operation(summary = "Get Product Inventory", description = "Retrieves inventory details for a product across all warehouses")
     public ResponseEntity<List<InventoryResponseDto>> getInventoryByProduct(
             @PathVariable String productId) {
         
@@ -62,6 +68,7 @@ public class InventoryController {
     
     // Get all inventory for a warehouse
     @GetMapping("/warehouse/{warehouseId}")
+    @Operation(summary = "Get Warehouse Inventory", description = "Retrieves all inventory items for a specific warehouse")
     public ResponseEntity<Page<InventoryResponseDto>> getInventoryByWarehouse(
             @PathVariable String warehouseId,
             @RequestParam(defaultValue = "0") int page,
@@ -79,6 +86,7 @@ public class InventoryController {
     
     // Reserve stock
     @PostMapping("/reserve")
+    @Operation(summary = "Reserve Stock", description = "Reserves stock for an order")
     public ResponseEntity<Map<String, Object>> reserveStock(@Valid @RequestBody StockReservationDto reservationDto) {
         boolean success = inventoryService.reserveStock(reservationDto);
         
@@ -96,6 +104,7 @@ public class InventoryController {
     
     // Release reservation
     @PostMapping("/release")
+    @Operation(summary = "Release Reservation", description = "Releases reserved stock")
     public ResponseEntity<Map<String, Object>> releaseReservation(
             @RequestParam String productId,
             @RequestParam String warehouseId,
@@ -119,6 +128,7 @@ public class InventoryController {
     
     // Confirm reservation
     @PostMapping("/confirm")
+    @Operation(summary = "Confirm Reservation", description = "Confirms a stock reservation")
     public ResponseEntity<Map<String, Object>> confirmReservation(
             @RequestParam String productId,
             @RequestParam String warehouseId,
@@ -142,6 +152,7 @@ public class InventoryController {
     
     // Adjust stock
     @PostMapping("/adjust")
+    @Operation(summary = "Adjust Stock", description = "Adjusts stock quantity manually")
     public ResponseEntity<InventoryResponseDto> adjustStock(@Valid @RequestBody StockAdjustmentDto adjustmentDto) {
         InventoryResponseDto inventory = inventoryService.adjustStock(adjustmentDto);
         return ResponseEntity.ok(inventory);
@@ -149,6 +160,7 @@ public class InventoryController {
     
     // Get low stock items
     @GetMapping("/low-stock")
+    @Operation(summary = "Get Low Stock Items", description = "Retrieves items with low stock")
     public ResponseEntity<List<InventoryResponseDto>> getLowStockItems() {
         List<InventoryResponseDto> lowStockItems = inventoryService.getLowStockItems();
         return ResponseEntity.ok(lowStockItems);
@@ -156,6 +168,7 @@ public class InventoryController {
     
     // Get items needing reorder
     @GetMapping("/reorder")
+    @Operation(summary = "Get Items Needing Reorder", description = "Retrieves items that need reordering")
     public ResponseEntity<List<InventoryResponseDto>> getItemsNeedingReorder() {
         List<InventoryResponseDto> reorderItems = inventoryService.getItemsNeedingReorder();
         return ResponseEntity.ok(reorderItems);
@@ -163,6 +176,7 @@ public class InventoryController {
     
     // Get overstock items
     @GetMapping("/overstock")
+    @Operation(summary = "Get Overstock Items", description = "Retrieves items that are overstocked")
     public ResponseEntity<List<InventoryResponseDto>> getOverstockItems() {
         List<InventoryResponseDto> overstockItems = inventoryService.getOverstockItems();
         return ResponseEntity.ok(overstockItems);
@@ -170,6 +184,7 @@ public class InventoryController {
     
     // Check product availability
     @GetMapping("/availability/{productId}")
+    @Operation(summary = "Check Product Availability", description = "Checks if product is available in required quantity")
     public ResponseEntity<Map<String, Object>> checkProductAvailability(
             @PathVariable String productId,
             @RequestParam Integer requiredQuantity) {
@@ -189,6 +204,7 @@ public class InventoryController {
     
     // Get product inventory summary
     @GetMapping("/summary/{productId}")
+    @Operation(summary = "Get Product Inventory Summary", description = "Retrieves summary of product inventory")
     public ResponseEntity<InventoryService.ProductInventorySummary> getProductInventorySummary(
             @PathVariable String productId) {
         
@@ -198,6 +214,7 @@ public class InventoryController {
     
     // Get total quantity for a product
     @GetMapping("/total/{productId}")
+    @Operation(summary = "Get Total Quantity", description = "Retrieves total quantity of a product")
     public ResponseEntity<Map<String, Object>> getTotalQuantityForProduct(@PathVariable String productId) {
         Integer totalQuantity = inventoryService.getTotalQuantityForProduct(productId);
         Integer availableQuantity = inventoryService.getAvailableQuantityForProduct(productId);
@@ -213,6 +230,7 @@ public class InventoryController {
     
     // Health check endpoint
     @GetMapping("/health")
+    @Operation(summary = "Health Check", description = "Checks service health")
     public ResponseEntity<Map<String, String>> healthCheck() {
         Map<String, String> response = Map.of(
             "status", "UP",

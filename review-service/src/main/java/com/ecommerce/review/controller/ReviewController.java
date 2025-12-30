@@ -6,6 +6,9 @@ import com.ecommerce.review.entity.ReviewVote;
 import com.ecommerce.review.service.ReviewService;
 import com.ecommerce.review.service.ImageService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,6 +34,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/reviews")
 @CrossOrigin(origins = "*")
+@Tag(name = "Reviews", description = "Product review management operations")
 public class ReviewController {
 
     private static final Logger log = LoggerFactory.getLogger(ReviewController.class);
@@ -47,14 +51,15 @@ public class ReviewController {
      * Create a new review for a product.
      */
     @PostMapping
+    @Operation(summary = "Create review", description = "Create a new product review with optional images")
     public ResponseEntity<Review> createReview(
-            @RequestParam String productId,
-            @RequestParam String userId,
-            @RequestParam String title,
-            @RequestParam String content,
-            @RequestParam Integer rating,
-            @RequestParam(required = false) Boolean verifiedPurchase,
-            @RequestParam(required = false) List<MultipartFile> images) {
+            @Parameter(description = "Product ID") @RequestParam String productId,
+            @Parameter(description = "User ID") @RequestParam String userId,
+            @Parameter(description = "Review title") @RequestParam String title,
+            @Parameter(description = "Review content") @RequestParam String content,
+            @Parameter(description = "Rating (1-5)") @RequestParam Integer rating,
+            @Parameter(description = "Is verified purchase") @RequestParam(required = false) Boolean verifiedPurchase,
+            @Parameter(description = "Review images") @RequestParam(required = false) List<MultipartFile> images) {
         
         try {
             Review review = reviewService.createReview(productId, userId, title, content, 
@@ -73,16 +78,17 @@ public class ReviewController {
      * Get reviews for a specific product.
      */
     @GetMapping("/product/{productId}")
+    @Operation(summary = "Get product reviews", description = "Get reviews for a specific product with filtering and pagination")
     public ResponseEntity<Page<Review>> getProductReviews(
-            @PathVariable String productId,
-            @RequestParam(required = false) ReviewStatus status,
-            @RequestParam(required = false) Integer minRating,
-            @RequestParam(required = false) Integer maxRating,
-            @RequestParam(required = false) Boolean verifiedOnly,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @Parameter(description = "Product ID") @PathVariable String productId,
+            @Parameter(description = "Review status") @RequestParam(required = false) ReviewStatus status,
+            @Parameter(description = "Minimum rating") @RequestParam(required = false) Integer minRating,
+            @Parameter(description = "Maximum rating") @RequestParam(required = false) Integer maxRating,
+            @Parameter(description = "Verified purchase only") @RequestParam(required = false) Boolean verifiedOnly,
+            @Parameter(description = "Sort by field") @RequestParam(defaultValue = "createdAt") String sortBy,
+            @Parameter(description = "Sort direction (asc/desc)") @RequestParam(defaultValue = "desc") String sortDir,
+            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size) {
         
         try {
             Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? 
@@ -103,7 +109,9 @@ public class ReviewController {
      * Get a specific review by ID.
      */
     @GetMapping("/{reviewId}")
-    public ResponseEntity<Review> getReview(@PathVariable String reviewId) {
+    @Operation(summary = "Get review by ID", description = "Get a specific review by its unique ID")
+    public ResponseEntity<Review> getReview(
+            @Parameter(description = "Review ID") @PathVariable String reviewId) {
         try {
             Optional<Review> review = reviewService.getReviewById(reviewId);
             return review.map(ResponseEntity::ok)
@@ -118,13 +126,14 @@ public class ReviewController {
      * Update an existing review.
      */
     @PutMapping("/{reviewId}")
+    @Operation(summary = "Update review", description = "Update an existing review")
     public ResponseEntity<Review> updateReview(
-            @PathVariable String reviewId,
-            @RequestParam String userId,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String content,
-            @RequestParam(required = false) Integer rating,
-            @RequestParam(required = false) List<MultipartFile> images) {
+            @Parameter(description = "Review ID") @PathVariable String reviewId,
+            @Parameter(description = "User ID") @RequestParam String userId,
+            @Parameter(description = "Review title") @RequestParam(required = false) String title,
+            @Parameter(description = "Review content") @RequestParam(required = false) String content,
+            @Parameter(description = "Rating") @RequestParam(required = false) Integer rating,
+            @Parameter(description = "Review images") @RequestParam(required = false) List<MultipartFile> images) {
         
         try {
             Review updatedReview = reviewService.updateReview(reviewId, userId, 
@@ -143,9 +152,10 @@ public class ReviewController {
      * Delete a review.
      */
     @DeleteMapping("/{reviewId}")
+    @Operation(summary = "Delete review", description = "Delete a review")
     public ResponseEntity<Void> deleteReview(
-            @PathVariable String reviewId,
-            @RequestParam String userId) {
+            @Parameter(description = "Review ID") @PathVariable String reviewId,
+            @Parameter(description = "User ID") @RequestParam String userId) {
         
         try {
             reviewService.deleteReview(reviewId, userId);
@@ -163,10 +173,11 @@ public class ReviewController {
      * Vote on a review (helpful/not helpful).
      */
     @PostMapping("/{reviewId}/vote")
+    @Operation(summary = "Vote on review", description = "Vote on a review (helpful/not helpful)")
     public ResponseEntity<Void> voteOnReview(
-            @PathVariable String reviewId,
-            @RequestParam String userId,
-            @RequestParam ReviewVote.VoteType voteType,
+            @Parameter(description = "Review ID") @PathVariable String reviewId,
+            @Parameter(description = "User ID") @RequestParam String userId,
+            @Parameter(description = "Vote type") @RequestParam ReviewVote.VoteType voteType,
             HttpServletRequest request) {
         
         try {
@@ -188,7 +199,9 @@ public class ReviewController {
      * Get review statistics for a product.
      */
     @GetMapping("/product/{productId}/stats")
-    public ResponseEntity<Map<String, Object>> getProductReviewStats(@PathVariable String productId) {
+    @Operation(summary = "Get review stats", description = "Get review statistics for a product")
+    public ResponseEntity<Map<String, Object>> getProductReviewStats(
+            @Parameter(description = "Product ID") @PathVariable String productId) {
         try {
             Map<String, Object> stats = reviewService.getProductReviewStats(productId);
             return ResponseEntity.ok(stats);
@@ -202,10 +215,11 @@ public class ReviewController {
      * Get user's reviews.
      */
     @GetMapping("/user/{userId}")
+    @Operation(summary = "Get user reviews", description = "Get reviews created by a specific user")
     public ResponseEntity<Page<Review>> getUserReviews(
-            @PathVariable String userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @Parameter(description = "User ID") @PathVariable String userId,
+            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size) {
         
         try {
             Pageable pageable = PageRequest.of(page, size);
@@ -221,11 +235,12 @@ public class ReviewController {
      * Search reviews by content.
      */
     @GetMapping("/search")
+    @Operation(summary = "Search reviews", description = "Search reviews by content keyword")
     public ResponseEntity<Page<Review>> searchReviews(
-            @RequestParam String query,
-            @RequestParam(required = false) String productId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @Parameter(description = "Search query") @RequestParam String query,
+            @Parameter(description = "Product ID filter") @RequestParam(required = false) String productId,
+            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size) {
         
         try {
             Pageable pageable = PageRequest.of(page, size);
@@ -241,9 +256,10 @@ public class ReviewController {
      * Get featured reviews for a product.
      */
     @GetMapping("/product/{productId}/featured")
+    @Operation(summary = "Get featured reviews", description = "Get featured reviews for a product")
     public ResponseEntity<List<Review>> getFeaturedReviews(
-            @PathVariable String productId,
-            @RequestParam(defaultValue = "5") int limit) {
+            @Parameter(description = "Product ID") @PathVariable String productId,
+            @Parameter(description = "Limit") @RequestParam(defaultValue = "5") int limit) {
         
         try {
             List<Review> reviews = reviewService.getFeaturedReviews(productId, limit);
@@ -258,9 +274,10 @@ public class ReviewController {
      * Get most helpful reviews for a product.
      */
     @GetMapping("/product/{productId}/helpful")
+    @Operation(summary = "Get most helpful reviews", description = "Get reviews with the most helpful votes")
     public ResponseEntity<List<Review>> getMostHelpfulReviews(
-            @PathVariable String productId,
-            @RequestParam(defaultValue = "5") int limit) {
+            @Parameter(description = "Product ID") @PathVariable String productId,
+            @Parameter(description = "Limit") @RequestParam(defaultValue = "5") int limit) {
         
         try {
             List<Review> reviews = reviewService.getMostHelpfulReviews(productId, limit);
@@ -275,8 +292,9 @@ public class ReviewController {
      * Get recent reviews across all products.
      */
     @GetMapping("/recent")
+    @Operation(summary = "Get recent reviews", description = "Get the most recent reviews across the platform")
     public ResponseEntity<List<Review>> getRecentReviews(
-            @RequestParam(defaultValue = "10") int limit) {
+            @Parameter(description = "Limit") @RequestParam(defaultValue = "10") int limit) {
         
         try {
             List<Review> reviews = reviewService.getRecentReviews(limit);
@@ -291,6 +309,7 @@ public class ReviewController {
      * Serve review images.
      */
     @GetMapping("/images/{year}/{month}/{day}/{filename}")
+    @Operation(summary = "Get review image", description = "Retrieve a review image by path")
     public ResponseEntity<byte[]> getImage(
             @PathVariable String year,
             @PathVariable String month,
@@ -320,6 +339,7 @@ public class ReviewController {
      * Serve review image thumbnails.
      */
     @GetMapping("/images/{year}/{month}/{day}/thumb_{filename}")
+    @Operation(summary = "Get image thumbnail", description = "Retrieve a thumbnail for a review image")
     public ResponseEntity<byte[]> getThumbnail(
             @PathVariable String year,
             @PathVariable String month,
@@ -348,6 +368,7 @@ public class ReviewController {
      * Get image metadata.
      */
     @GetMapping("/images/{year}/{month}/{day}/{filename}/metadata")
+    @Operation(summary = "Get image metadata", description = "Retrieve metadata for a review image")
     public ResponseEntity<ImageService.ImageMetadata> getImageMetadata(
             @PathVariable String year,
             @PathVariable String month,
@@ -371,6 +392,7 @@ public class ReviewController {
      * Health check endpoint.
      */
     @GetMapping("/health")
+    @Operation(summary = "Health check", description = "Check service health status")
     public ResponseEntity<Map<String, String>> healthCheck() {
         return ResponseEntity.ok(Map.of(
                 "status", "UP",

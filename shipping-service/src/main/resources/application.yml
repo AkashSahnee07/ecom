@@ -254,7 +254,7 @@ springdoc:
     path: /shipping/v3/api-docs
   swagger-ui:
     path: /shipping/swagger-ui.html
-    enabled: true
+#    enabled: true
   info:
     title: Shipping Service API
     description: Microservice for managing shipments and tracking
@@ -263,7 +263,7 @@ springdoc:
       name: E-commerce Team
       email: team@ecommerce.com
   servers:
-    - url: http://localhost:8086/shipping
+    - url: http://localhost:8088/shipping
       description: Local Development Server
     - url: https://api.ecommerce.com/shipping
       description: Production Server

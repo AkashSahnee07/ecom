@@ -50,6 +50,14 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     }
     
     private boolean isPublicEndpoint(String path) {
+        // Allow Swagger UI and API Docs
+        if (path.contains("/v3/api-docs") || 
+            path.contains("/swagger-ui") || 
+            path.contains("/webjars") ||
+            path.equals("/swagger-ui.html")) {
+            return true;
+        }
+
         List<String> publicPaths = List.of(
             "/api/auth/login",
             "/api/auth/register",

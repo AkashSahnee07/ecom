@@ -2,6 +2,8 @@ package com.ecommerce.notification.controller;
 
 import com.ecommerce.notification.entity.*;
 import com.ecommerce.notification.service.NotificationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +27,9 @@ import java.util.UUID;
  * REST Controller for notification management
  */
 @RestController
-@RequestMapping("/api/notifications")
+@RequestMapping("/api/v1/notifications")
 @CrossOrigin(origins = "*")
+@Tag(name = "Notification Management", description = "APIs for sending and managing notifications")
 public class NotificationController {
     
     private static final Logger logger = LoggerFactory.getLogger(NotificationController.class);
@@ -38,6 +41,7 @@ public class NotificationController {
      * Create and send a new notification
      */
     @PostMapping
+    @Operation(summary = "Create Notification", description = "Creates and schedules a new notification")
     public ResponseEntity<?> createNotification(@Valid @RequestBody CreateNotificationRequest request) {
         try {
             logger.info("Creating notification for recipient: {}, type: {}", 
@@ -72,6 +76,7 @@ public class NotificationController {
      * Send notification immediately
      */
     @PostMapping("/send")
+    @Operation(summary = "Send Notification Immediately", description = "Sends a notification immediately without scheduling")
     public ResponseEntity<?> sendNotification(@Valid @RequestBody CreateNotificationRequest request) {
         try {
             logger.info("Sending immediate notification for recipient: {}, type: {}", 
@@ -110,6 +115,7 @@ public class NotificationController {
      * Send notification asynchronously
      */
     @PostMapping("/send-async")
+    @Operation(summary = "Send Notification Asynchronously", description = "Queues a notification for sending asynchronously")
     public ResponseEntity<?> sendNotificationAsync(@Valid @RequestBody CreateNotificationRequest request) {
         try {
             logger.info("Sending async notification for recipient: {}, type: {}", 
@@ -162,6 +168,7 @@ public class NotificationController {
      * Get notifications for a recipient
      */
     @GetMapping("/recipient/{recipientId}")
+    @Operation(summary = "Get Notifications by Recipient", description = "Retrieves notifications for a specific recipient")
     public ResponseEntity<?> getNotificationsByRecipient(
             @PathVariable String recipientId,
             @RequestParam(defaultValue = "0") int page,
@@ -209,6 +216,7 @@ public class NotificationController {
      * Get notifications by type
      */
     @GetMapping("/type/{type}")
+    @Operation(summary = "Get Notifications by Type", description = "Retrieves notifications filtered by type")
     public ResponseEntity<?> getNotificationsByType(
             @PathVariable NotificationType type,
             @RequestParam(defaultValue = "0") int page,
@@ -246,6 +254,7 @@ public class NotificationController {
      * Update notification status
      */
     @PutMapping("/{id}/status")
+    @Operation(summary = "Update Notification Status", description = "Updates the status of an existing notification")
     public ResponseEntity<?> updateNotificationStatus(
             @PathVariable UUID id,
             @RequestBody UpdateStatusRequest request) {
@@ -285,6 +294,7 @@ public class NotificationController {
      * Retry failed notification
      */
     @PostMapping("/{id}/retry")
+    @Operation(summary = "Retry Notification", description = "Retries sending a failed notification")
     public ResponseEntity<?> retryNotification(@PathVariable UUID id) {
         try {
             boolean retried = notificationService.retryNotification(id);
@@ -307,6 +317,7 @@ public class NotificationController {
      * Get notification statistics
      */
     @GetMapping("/stats")
+    @Operation(summary = "Get Notification Statistics", description = "Retrieves statistics about notifications within a date range")
     public ResponseEntity<?> getNotificationStats(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
@@ -326,6 +337,7 @@ public class NotificationController {
      * Get scheduled notifications
      */
     @GetMapping("/scheduled")
+    @Operation(summary = "Get Scheduled Notifications", description = "Retrieves a list of notifications scheduled for future delivery")
     public ResponseEntity<?> getScheduledNotifications(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -367,6 +379,7 @@ public class NotificationController {
      * Cleanup old notifications
      */
     @DeleteMapping("/cleanup")
+    @Operation(summary = "Cleanup Old Notifications", description = "Removes notifications older than the specified number of days")
     public ResponseEntity<?> cleanupOldNotifications(@RequestParam(defaultValue = "30") int daysOld) {
         try {
             int deletedCount = notificationService.cleanupOldNotifications(daysOld);

@@ -272,6 +272,31 @@ show_status() {
     fi
 }
 
+compile_all_services() {
+    echo -e "${BLUE}🚀 Starting all E-commerce Microservices...${NC}"
+    echo -e "${BLUE}===========================================${NC}"
+
+    # Start infrastructure services first
+    echo -e "${BLUE}🐳 Starting infrastructure services...${NC}"
+    if [ -f "docker-compose.yml" ]; then
+        docker-compose up -d
+        echo -e "${GREEN}✅ Infrastructure services started${NC}"
+        echo -e "${YELLOW}⏳ Waiting for infrastructure to be ready...${NC}"
+        sleep 30
+    else
+        echo -e "${YELLOW}⚠️  docker-compose.yml not found${NC}"
+    fi
+
+    # Build all services
+    echo -e "${BLUE}🔨 Building all services (using JDK 17)...${NC}"
+    if JAVA_HOME=$(/usr/libexec/java_home -v 17) mvn clean install -DskipTests; then
+        echo -e "${GREEN}✅ All services built successfully${NC}"
+    else
+        echo -e "${RED}❌ Build failed. Please check the build logs.${NC}"
+        return 1
+    fi
+}
+
 # Function to start all services
 start_all_services() {
     echo -e "${BLUE}🚀 Starting all E-commerce Microservices...${NC}"
@@ -458,6 +483,19 @@ case "${1:-help}" in
             start_all_services
         fi
         ;;
+      "compile")
+              if [ -n "$2" ]; then
+                  if is_valid_service "$2"; then
+                      start_service "$2"
+                  else
+                      echo -e "${RED}❌ Unknown service: $2${NC}"
+                      echo -e "${YELLOW}💡 Use '$0 list' to see available services${NC}"
+                      exit 1
+                  fi
+              else
+                  compile_all_services
+              fi
+              ;;
     "stop")
         if [ -n "$2" ]; then
             if is_valid_service "$2"; then
