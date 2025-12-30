@@ -1,7 +1,7 @@
 server:
   port: 8088
   servlet:
-    context-path: /shipping
+    context-path: /
 
 spring:
   application:

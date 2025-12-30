@@ -23,54 +23,90 @@ spring:
             - Path=/api/users/**,/api/auth/**
           filters:
             - StripPrefix=1
+        - id: product-service-swagger
+          uri: lb://product-service
+          predicates:
+            - Path=/products/swagger-ui.html,/products/swagger-ui/**,/products/v3/api-docs/**
         - id: product-service
           uri: lb://product-service
           predicates:
             - Path=/api/products/**
           filters:
             - StripPrefix=1
+        - id: cart-service-swagger
+          uri: lb://cart-service
+          predicates:
+            - Path=/cart/swagger-ui.html,/cart/swagger-ui/**,/cart/v3/api-docs/**
         - id: cart-service
           uri: lb://cart-service
           predicates:
             - Path=/api/cart/**
           filters:
             - StripPrefix=1
+        - id: order-service-swagger
+          uri: lb://order-service
+          predicates:
+            - Path=/orders/swagger-ui.html,/orders/swagger-ui/**,/orders/v3/api-docs/**
         - id: order-service
           uri: lb://order-service
           predicates:
             - Path=/api/orders/**
           filters:
             - StripPrefix=1
+        - id: payment-service-swagger
+          uri: lb://payment-service
+          predicates:
+            - Path=/payments/swagger-ui.html,/payments/swagger-ui/**,/payments/v3/api-docs/**
         - id: payment-service
           uri: lb://payment-service
           predicates:
             - Path=/api/payments/**
           filters:
             - StripPrefix=1
+        - id: inventory-service-swagger
+          uri: lb://inventory-service
+          predicates:
+            - Path=/inventory/swagger-ui.html,/inventory/swagger-ui/**,/inventory/v3/api-docs/**
         - id: inventory-service
           uri: lb://inventory-service
           predicates:
             - Path=/api/inventory/**
           filters:
             - StripPrefix=1
+        - id: shipping-service-swagger
+          uri: lb://shipping-service
+          predicates:
+            - Path=/shipping/swagger-ui.html,/shipping/swagger-ui/**,/shipping/v3/api-docs/**
         - id: shipping-service
           uri: lb://shipping-service
           predicates:
             - Path=/api/shipping/**
           filters:
             - StripPrefix=1
+        - id: notification-service-swagger
+          uri: lb://notification-service
+          predicates:
+            - Path=/notifications/swagger-ui.html,/notifications/swagger-ui/**,/notifications/v3/api-docs/**
         - id: notification-service
           uri: lb://notification-service
           predicates:
             - Path=/api/notifications/**
           filters:
             - StripPrefix=1
+        - id: review-service-swagger
+          uri: lb://review-service
+          predicates:
+            - Path=/reviews/swagger-ui.html,/reviews/swagger-ui/**,/reviews/v3/api-docs/**
         - id: review-service
           uri: lb://review-service
           predicates:
             - Path=/api/reviews/**
           filters:
             - StripPrefix=1
+        - id: s-service-swagger
+          uri: lb://recommendation-service
+          predicates:
+            - Path=/recommendations/swagger-ui.html,/recommendations/swagger-ui/**,/recommendations/v3/api-docs/**
         - id: recommendation-service
           uri: lb://recommendation-service
           predicates:
