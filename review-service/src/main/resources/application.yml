@@ -138,6 +138,12 @@ management:
         http.server.requests: 0.5, 0.95, 0.99
       sla:
         http.server.requests: 100ms, 200ms, 500ms, 1s, 2s
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
 
 # Logging Configuration
 logging:
@@ -155,13 +161,6 @@ logging:
     name: logs/review-service.log
     max-size: 100MB
     max-history: 30
-
-# Distributed Tracing
-spring.sleuth:
-  zipkin:
-    base-url: http://localhost:9411
-  sampler:
-    probability: 1.0
 
 # Custom Application Properties
 app:
@@ -283,9 +282,10 @@ logging:
   file:
     name: /var/log/review-service/review-service.log
 
-spring.sleuth:
-  sampler:
-    probability: 0.1
+management:
+  tracing:
+    sampling:
+      probability: 0.1
 
 app:
   review:
@@ -317,7 +317,7 @@ spring:
     console:
       enabled: true
   kafka:
-    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    bootstrap-servers: localhost:9092
 
 app:
   review:

@@ -2,22 +2,22 @@
 spring:
   application:
     name: review-service-test
-  profiles:
-    active: test
+  config:
+    import: "optional:configserver:"
 
   # In-memory H2 Database for testing
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
-    password: 
+    password:
     driver-class-name: org.h2.Driver
-  
+
   # H2 Console (useful for debugging tests)
   h2:
     console:
       enabled: true
       path: /h2-console
-  
+
   # JPA Configuration for tests
   jpa:
     hibernate:
@@ -32,9 +32,9 @@ spring:
           use_second_level_cache: false
           use_query_cache: false
 
-  # Embedded Kafka for testing
+  # Kafka - use localhost placeholder (overridden by @EmbeddedKafka)
   kafka:
-    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -44,7 +44,7 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       auto-offset-reset: earliest
       properties:
-        spring.json.trusted.packages: "com.ecommerce.*"
+        spring.json.trusted.packages: "*"
 
   # Disable file upload in tests
   servlet:
@@ -57,7 +57,7 @@ spring:
 
 # Test server configuration
 server:
-  port: 0 # Random available port
+  port: 0
 
 # Disable Eureka in tests
 eureka:
@@ -75,6 +75,8 @@ management:
   endpoint:
     health:
       show-details: always
+  tracing:
+    enabled: false
 
 # Test logging configuration
 logging:
@@ -82,60 +84,42 @@ logging:
     com.ecommerce.review: DEBUG
     org.springframework.kafka: WARN
     org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.springframework.web: INFO
     org.springframework.test: INFO
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
 
-# Disable distributed tracing in tests
-spring.sleuth:
-  enabled: false
-
 # Test-specific application properties
 app:
   review:
-    # Test image settings
     image:
       upload-dir: ./test-uploads
       max-size: 1MB
       allowed-types: jpg,png
       thumbnail-size: 100
       max-images-per-review: 3
-    
-    # Lenient moderation for tests
     moderation:
       auto-approve-threshold: 0.1
       spam-threshold: 0.9
       profanity-filter-enabled: false
       require-manual-review: false
       max-pending-reviews: 100
-    
-    # Test rating settings
     rating:
       min-rating: 1
       max-rating: 5
       allow-half-ratings: true
       require-purchase-verification: false
-    
-    # Disable notifications in tests
     notification:
       enabled: false
-    
-    # Disable analytics in tests
     analytics:
       enabled: false
       batch-size: 10
       processing-interval: 1000
       retention-days: 1
-    
-    # Short cache TTL for tests
     cache:
       review-ttl: 60
       stats-ttl: 30
       featured-ttl: 120
-    
-    # Disable security for tests
     security:
       rate-limit:
         enabled: false

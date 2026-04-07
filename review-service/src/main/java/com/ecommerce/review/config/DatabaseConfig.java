@@ -12,6 +12,8 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import org.springframework.context.annotation.Profile;
+
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -24,6 +26,7 @@ import java.util.Properties;
 @EnableJpaRepositories(
     basePackages = "com.ecommerce.review.repository"
 )
+@Profile("!test")
 public class DatabaseConfig {
 
     /**
