@@ -2,7 +2,7 @@
 
 ## Overview
 
-The API Gateway is the single entry point for all client requests in the e-commerce microservices architecture. Built with Spring Cloud Gateway, it provides intelligent routing, load balancing, authentication, rate limiting, and cross-cutting concerns management. The gateway acts as a reverse proxy that routes requests to appropriate microservices while handling security, monitoring, and protocol translation.
+The API Gateway is the single entry point for all client requests in the e-commerce microservices architecture. Built with Spring Cloud Gateway, it provides intelligent routing, load balancing, authentication, rate limiting, and cross-cutting concerns management. The gateway acts as a reverse proxy that routes requests to appropriate microservices while handling security, monitoring, and protocol translation..
 
 ## Features
 
