@@ -5,6 +5,15 @@
 
 set -e
 
+# Base directory (where this script lives)
+BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOG_DIR="$BASE_DIR/logs"
+PID_DIR="$BASE_DIR/pids"
+mkdir -p "$LOG_DIR" "$PID_DIR"
+
+# Java 17 home
+export JAVA_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null || echo "$JAVA_HOME")
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -93,8 +102,8 @@ show_usage() {
 # Function to check if a service is running
 is_service_running() {
     local service_name=$1
-    local pid_file="$service_name.pid"
-    
+    local pid_file="$PID_DIR/$service_name.pid"
+
     if [ -f "$pid_file" ]; then
         local pid=$(cat "$pid_file")
         if ps -p $pid > /dev/null 2>&1; then
@@ -107,8 +116,8 @@ is_service_running() {
 # Function to get service PID
 get_service_pid() {
     local service_name=$1
-    local pid_file="$service_name.pid"
-    
+    local pid_file="$PID_DIR/$service_name.pid"
+
     if [ -f "$pid_file" ]; then
         cat "$pid_file"
     else
@@ -139,22 +148,24 @@ check_service_health() {
 wait_for_health() {
     local service_name=$1
     local port=$(get_service_port "$service_name")
-    local max_attempts=4
+    local max_attempts=30
     local attempt=1
-    
+
     echo -e "${YELLOW}⏳ Waiting for $service_name to be healthy...${NC}"
-    
+
     while [ $attempt -le $max_attempts ]; do
         if curl -s -f "http://localhost:$port/actuator/health" > /dev/null 2>&1; then
             echo -e "${GREEN}✅ $service_name is healthy!${NC}"
             return 0
         fi
-        
-        echo -e "${YELLOW}   Attempt $attempt/$max_attempts - $service_name not ready yet...${NC}"
+
+        if [ $((attempt % 6)) -eq 0 ]; then
+            echo -e "${YELLOW}   Attempt $attempt/$max_attempts - $service_name not ready yet...${NC}"
+        fi
         sleep 5
         ((attempt++))
     done
-    
+
     echo -e "${RED}❌ $service_name failed to start within expected time${NC}"
     return 1
 }
@@ -175,16 +186,15 @@ start_service() {
     fi
     
     echo -e "${BLUE}🔄 Starting $service_name...${NC}"
-    
-    if [ ! -d "$service_name" ]; then
-        echo -e "${RED}❌ Service directory $service_name not found${NC}"
+
+    local jar_file="$BASE_DIR/$service_name/target/$service_name-1.0.0.jar"
+    if [ ! -f "$jar_file" ]; then
+        echo -e "${RED}❌ JAR not found: $jar_file (run '$0 compile' first)${NC}"
         return 1
     fi
-    
-    cd "$service_name"
-    JAVA_HOME=$(/usr/libexec/java_home -v 17) nohup mvn -Dspring-boot.run.profiles=dev spring-boot:run > "./$service_name.log" 2>&1 &
-    echo $! > "./$service_name.pid"
-    cd ..
+
+    nohup "$JAVA_HOME/bin/java" -jar "$jar_file" > "$LOG_DIR/$service_name.log" 2>&1 &
+    echo $! > "$PID_DIR/$service_name.pid"
     
     wait_for_health "$service_name"
 }
@@ -192,31 +202,31 @@ start_service() {
 # Function to stop a service
 stop_service() {
     local service_name=$1
-    local pid_file="$service_name.pid"
-    
+    local pid_file="$PID_DIR/$service_name.pid"
+
     if [ -f "$pid_file" ]; then
         local pid=$(cat "$pid_file")
         if ps -p $pid > /dev/null 2>&1; then
             echo -e "${YELLOW}🔄 Stopping $service_name (PID: $pid)...${NC}"
             kill $pid
-            
+
             # Wait for process to stop
             local attempts=0
             while ps -p $pid > /dev/null 2>&1 && [ $attempts -lt 30 ]; do
                 sleep 1
                 ((attempts++))
             done
-            
+
             if ps -p $pid > /dev/null 2>&1; then
                 echo -e "${RED}⚠️  Force killing $service_name...${NC}"
                 kill -9 $pid
             fi
-            
+
             echo -e "${GREEN}✅ $service_name stopped${NC}"
         else
             echo -e "${YELLOW}⚠️  $service_name was not running${NC}"
         fi
-        
+
         rm -f "$pid_file"
     else
         echo -e "${YELLOW}⚠️  No PID file found for $service_name${NC}"
@@ -273,23 +283,12 @@ show_status() {
 }
 
 compile_all_services() {
-    echo -e "${BLUE}🚀 Starting all E-commerce Microservices...${NC}"
-    echo -e "${BLUE}===========================================${NC}"
-
-    # Start infrastructure services first
-    echo -e "${BLUE}🐳 Starting infrastructure services...${NC}"
-    if [ -f "docker-compose.yml" ]; then
-        docker-compose up -d
-        echo -e "${GREEN}✅ Infrastructure services started${NC}"
-        echo -e "${YELLOW}⏳ Waiting for infrastructure to be ready...${NC}"
-        sleep 30
-    else
-        echo -e "${YELLOW}⚠️  docker-compose.yml not found${NC}"
-    fi
+    echo -e "${BLUE}🔨 Compiling all E-commerce Microservices...${NC}"
+    echo -e "${BLUE}=============================================${NC}"
 
     # Build all services
     echo -e "${BLUE}🔨 Building all services (using JDK 17)...${NC}"
-    if JAVA_HOME=$(/usr/libexec/java_home -v 17) mvn clean install -DskipTests; then
+    if mvn -B clean install -DskipTests -f "$BASE_DIR/pom.xml"; then
         echo -e "${GREEN}✅ All services built successfully${NC}"
     else
         echo -e "${RED}❌ Build failed. Please check the build logs.${NC}"
@@ -301,34 +300,25 @@ compile_all_services() {
 start_all_services() {
     echo -e "${BLUE}🚀 Starting all E-commerce Microservices...${NC}"
     echo -e "${BLUE}===========================================${NC}"
-    
+
     # Start infrastructure services first
     echo -e "${BLUE}🐳 Starting infrastructure services...${NC}"
-    if [ -f "docker-compose.yml" ]; then
-        docker-compose up -d
+    if [ -f "$BASE_DIR/docker-compose.yml" ]; then
+        docker-compose -f "$BASE_DIR/docker-compose.yml" up -d
         echo -e "${GREEN}✅ Infrastructure services started${NC}"
         echo -e "${YELLOW}⏳ Waiting for infrastructure to be ready...${NC}"
-        sleep 30
+        sleep 15
     else
         echo -e "${YELLOW}⚠️  docker-compose.yml not found${NC}"
     fi
-    
-    # Build all services
-    echo -e "${BLUE}🔨 Building all services (using JDK 17)...${NC}"
-    if JAVA_HOME=$(/usr/libexec/java_home -v 17) mvn clean install -DskipTests; then
-        echo -e "${GREEN}✅ All services built successfully${NC}"
-    else
-        echo -e "${RED}❌ Build failed. Please check the build logs.${NC}"
-        return 1
-    fi
-    
+
     # Start services in order
     echo -e "${BLUE}🚀 Starting microservices...${NC}"
     for service in "${STARTUP_ORDER[@]}"; do
         start_service "$service"
         sleep 2  # Brief pause between service starts
     done
-    
+
     echo -e "${GREEN}🎉 All services started successfully!${NC}"
     show_service_urls
 }
@@ -381,8 +371,8 @@ restart_service() {
 # Function to show service logs
 show_logs() {
     local service_name=$1
-    local log_file="$service_name.log"
-    
+    local log_file="$LOG_DIR/$service_name.log"
+
     if [ -f "$log_file" ]; then
         echo -e "${BLUE}📋 Showing logs for $service_name (last 50 lines)${NC}"
         echo -e "${BLUE}================================================${NC}"
@@ -421,27 +411,27 @@ list_services() {
 # Function to clean up files
 clean_up() {
     echo -e "${BLUE}🧹 Cleaning up files...${NC}"
-    
+
     # Remove PID files
-    if ls *.pid 1> /dev/null 2>&1; then
+    if ls "$PID_DIR"/*.pid 1> /dev/null 2>&1; then
         echo -e "${YELLOW}🔄 Removing PID files...${NC}"
-        rm -f *.pid
+        rm -f "$PID_DIR"/*.pid
         echo -e "${GREEN}✅ PID files removed${NC}"
     fi
-    
+
     # Ask about log files
     read -p "Do you want to remove log files? (y/N): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        if ls *.log 1> /dev/null 2>&1; then
+        if ls "$LOG_DIR"/*.log 1> /dev/null 2>&1; then
             echo -e "${YELLOW}🔄 Removing log files...${NC}"
-            rm -f *.log
+            rm -f "$LOG_DIR"/*.log
             echo -e "${GREEN}✅ Log files removed${NC}"
         else
             echo -e "${YELLOW}⚠️  No log files found${NC}"
         fi
     fi
-    
+
     echo -e "${GREEN}✅ Cleanup completed${NC}"
 }
 

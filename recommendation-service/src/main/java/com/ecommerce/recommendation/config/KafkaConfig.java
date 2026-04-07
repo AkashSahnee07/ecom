@@ -90,10 +90,10 @@ public class KafkaConfig {
         configProps.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 10000); // 10 seconds
         
         // Deserialization settings
-        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "com.ecommerce.*");
+        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         configProps.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
-        configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "java.lang.Object");
-        
+        configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "java.util.HashMap");
+
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 
@@ -156,9 +156,10 @@ public class KafkaConfig {
         
         // Specific settings for user behavior processing
         configProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500); // Higher batch size
-        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "com.ecommerce.*");
+        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         configProps.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
-        
+        configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "java.util.HashMap");
+
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 
@@ -193,9 +194,10 @@ public class KafkaConfig {
         configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         configProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         
-        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "com.ecommerce.*");
+        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         configProps.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
-        
+        configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "java.util.HashMap");
+
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 
