@@ -3,7 +3,7 @@ import sys
 import json
 import requests
 
-API_KEY = os.environ["ANTHROPIC_API_KEY"]
+API_KEY = os.environ["ANTHROPIC_API_KEY"].strip()
 
 # Read the PR diff
 with open("pr.diff") as f:
