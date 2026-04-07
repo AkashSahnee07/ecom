@@ -290,7 +290,5 @@ export const getStaticProps: GetStaticProps = async () => {
     props: {
       readmeContents,
     },
-    // Regenerate the page at most once every hour
-    revalidate: 3600,
   };
 };

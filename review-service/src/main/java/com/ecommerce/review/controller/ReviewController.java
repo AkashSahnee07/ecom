@@ -32,8 +32,7 @@ import java.util.Optional;
  * REST Controller for managing product reviews.
  */
 @RestController
-@RequestMapping("/api/reviews")
-@CrossOrigin(origins = "*")
+@RequestMapping("/reviews")
 @Tag(name = "Reviews", description = "Product review management operations")
 public class ReviewController {
 

@@ -20,9 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/inventory")
-@CrossOrigin(origins = "*")
-@Tag(name = "Inventory Management", description = "APIs for managing inventory stock")
+@RequestMapping("/inventory")
+@Tag(name = "Inventory Management", description = "APIs for managing inventory")
 public class InventoryController {
     
     @Autowired
@@ -32,12 +31,12 @@ public class InventoryController {
     @PostMapping
     @Operation(summary = "Create or Update Inventory", description = "Creates new inventory record or updates existing one")
     public ResponseEntity<InventoryResponseDto> createOrUpdateInventory(
-            @RequestParam String productId,
-            @RequestParam String warehouseId,
-            @RequestParam Integer quantity,
-            @RequestParam(required = false, defaultValue = "10") Integer minimumStockLevel,
-            @RequestParam(required = false, defaultValue = "20") Integer reorderPoint,
-            @RequestParam(required = false, defaultValue = "100") Integer reorderQuantity) {
+            @RequestParam(name = "productId") String productId,
+            @RequestParam(name = "warehouseId") String warehouseId,
+            @RequestParam(name = "quantity") Integer quantity,
+            @RequestParam(name = "minimumStockLevel", required = false, defaultValue = "10") Integer minimumStockLevel,
+            @RequestParam(name = "reorderPoint", required = false, defaultValue = "20") Integer reorderPoint,
+            @RequestParam(name = "reorderQuantity", required = false, defaultValue = "100") Integer reorderQuantity) {
         
         InventoryResponseDto inventory = inventoryService.createOrUpdateInventory(
             productId, warehouseId, quantity, minimumStockLevel, reorderPoint, reorderQuantity);
@@ -71,10 +70,10 @@ public class InventoryController {
     @Operation(summary = "Get Warehouse Inventory", description = "Retrieves all inventory items for a specific warehouse")
     public ResponseEntity<Page<InventoryResponseDto>> getInventoryByWarehouse(
             @PathVariable String warehouseId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "productId") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", defaultValue = "productId") String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = "asc") String sortDir) {
         
         Sort sort = sortDir.equalsIgnoreCase("desc") ? 
             Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
@@ -106,11 +105,11 @@ public class InventoryController {
     @PostMapping("/release")
     @Operation(summary = "Release Reservation", description = "Releases reserved stock")
     public ResponseEntity<Map<String, Object>> releaseReservation(
-            @RequestParam String productId,
-            @RequestParam String warehouseId,
-            @RequestParam Integer quantity,
-            @RequestParam String orderId,
-            @RequestParam String userId) {
+            @RequestParam(name = "productId") String productId,
+            @RequestParam(name = "warehouseId") String warehouseId,
+            @RequestParam(name = "quantity") Integer quantity,
+            @RequestParam(name = "orderId") String orderId,
+            @RequestParam(name = "userId") String userId) {
         
         boolean success = inventoryService.releaseReservation(productId, warehouseId, quantity, orderId, userId);
         
@@ -130,11 +129,11 @@ public class InventoryController {
     @PostMapping("/confirm")
     @Operation(summary = "Confirm Reservation", description = "Confirms a stock reservation")
     public ResponseEntity<Map<String, Object>> confirmReservation(
-            @RequestParam String productId,
-            @RequestParam String warehouseId,
-            @RequestParam Integer quantity,
-            @RequestParam String orderId,
-            @RequestParam String userId) {
+            @RequestParam(name = "productId") String productId,
+            @RequestParam(name = "warehouseId") String warehouseId,
+            @RequestParam(name = "quantity") Integer quantity,
+            @RequestParam(name = "orderId") String orderId,
+            @RequestParam(name = "userId") String userId) {
         
         boolean success = inventoryService.confirmReservation(productId, warehouseId, quantity, orderId, userId);
         
@@ -187,7 +186,7 @@ public class InventoryController {
     @Operation(summary = "Check Product Availability", description = "Checks if product is available in required quantity")
     public ResponseEntity<Map<String, Object>> checkProductAvailability(
             @PathVariable String productId,
-            @RequestParam Integer requiredQuantity) {
+            @RequestParam(name = "requiredQuantity") Integer requiredQuantity) {
         
         boolean available = inventoryService.isProductAvailable(productId, requiredQuantity);
         Integer totalAvailable = inventoryService.getAvailableQuantityForProduct(productId);

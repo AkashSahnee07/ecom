@@ -489,7 +489,7 @@ export default function OrderService() {
             <h2 className="text-2xl font-semibold text-gray-900 mb-6">Performance Metrics</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="card text-center">
-                <div className="text-2xl font-bold text-red-600 mb-2">< 2s</div>
+                <div className="text-2xl font-bold text-red-600 mb-2">&lt; 2s</div>
                 <div className="text-sm text-gray-600">Order Creation Time</div>
               </div>
               <div className="card text-center">
@@ -501,7 +501,7 @@ export default function OrderService() {
                 <div className="text-sm text-gray-600">Orders per Day</div>
               </div>
               <div className="card text-center">
-                <div className="text-2xl font-bold text-purple-600 mb-2">< 5min</div>
+                <div className="text-2xl font-bold text-purple-600 mb-2">&lt; 5min</div>
                 <div className="text-sm text-gray-600">Average Processing</div>
               </div>
             </div>

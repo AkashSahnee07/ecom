@@ -10,11 +10,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/recommendations")
-@CrossOrigin(origins = "*")
+@RequestMapping("/recommendations")
+@Tag(name = "Recommendation Management", description = "APIs for managing recommendations")
 public class RecommendationController {
     
     @Autowired
@@ -24,10 +25,10 @@ public class RecommendationController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<Page<ProductResponseDto>> getRecommendationsForUser(
             @PathVariable Long userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "score") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sortBy", defaultValue = "score") String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir) {
         
         try {
             Sort sort = sortDir.equalsIgnoreCase("desc") ? 
@@ -48,10 +49,10 @@ public class RecommendationController {
     public ResponseEntity<Page<ProductResponseDto>> getRecommendationsByType(
             @PathVariable Long userId,
             @PathVariable String type,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "score") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sortBy", defaultValue = "score") String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir) {
         
         try {
             RecommendationType recommendationType;
@@ -78,9 +79,9 @@ public class RecommendationController {
     @GetMapping("/similar/{productId}")
     public ResponseEntity<Page<ProductResponseDto>> getSimilarProducts(
             @PathVariable Long productId,
-            @RequestParam(required = false) Long userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "userId", required = false) Long userId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
         
         try {
             Pageable pageable = PageRequest.of(page, size);

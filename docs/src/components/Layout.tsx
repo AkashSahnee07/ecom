@@ -23,7 +23,8 @@ import {
   Search,
   Workflow,
   MessageSquare,
-  FileText
+  FileText,
+  Globe
 } from 'lucide-react'
 
 interface LayoutProps {
@@ -52,6 +53,12 @@ const serviceNavigation = [
   { name: 'Shipping Service', href: '/services/shipping-service', icon: Truck },
   { name: 'Review Service', href: '/services/review-service', icon: Star },
   { name: 'Notification Service', href: '/services/notification-service', icon: Bell },
+]
+
+const infrastructureNavigation = [
+  { name: 'API Gateway', href: '/services/api-gateway', icon: Globe },
+  { name: 'Config Server', href: '/services/config-server', icon: Settings },
+  { name: 'Eureka Server', href: '/services/eureka-server', icon: Search },
 ]
 
 export default function Layout({ children }: LayoutProps) {
@@ -126,6 +133,28 @@ export default function Layout({ children }: LayoutProps) {
                   })}
                 </div>
               </div>
+
+              <div className="pt-4">
+                <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Infrastructure
+                </h3>
+                <div className="mt-2 space-y-1">
+                  {infrastructureNavigation.map((item) => {
+                    const Icon = item.icon
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className={isActive(item.href) ? 'sidebar-link-active' : 'sidebar-link-inactive'}
+                        onClick={() => setSidebarOpen(false)}
+                      >
+                        <Icon className="mr-3 h-4 w-4" />
+                        {item.name}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
             </nav>
           </div>
         </div>
@@ -168,6 +197,27 @@ export default function Layout({ children }: LayoutProps) {
                 </h3>
                 <div className="mt-2 space-y-1">
                   {serviceNavigation.map((item) => {
+                    const Icon = item.icon
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className={isActive(item.href) ? 'sidebar-link-active' : 'sidebar-link-inactive'}
+                      >
+                        <Icon className="mr-3 h-4 w-4" />
+                        {item.name}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+
+              <div className="pt-6">
+                <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Infrastructure
+                </h3>
+                <div className="mt-2 space-y-1">
+                  {infrastructureNavigation.map((item) => {
                     const Icon = item.icon
                     return (
                       <Link

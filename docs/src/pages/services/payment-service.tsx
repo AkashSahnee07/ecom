@@ -781,7 +781,7 @@ export default function PaymentService() {
                   <div className="border-l-4 border-blue-400 pl-4">
                     <div className="flex items-center mb-2">
                       <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded mr-2">GET</span>
-                      <code className="text-sm font-mono">/api/payments/{'{'}transactionId{'}'}}</code>
+                      <code className="text-sm font-mono">/api/payments/{'{'}transactionId{'}'}</code>
                     </div>
                     <p className="text-sm text-gray-600">Get payment transaction details</p>
                   </div>

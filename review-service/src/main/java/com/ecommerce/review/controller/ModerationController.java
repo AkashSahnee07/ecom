@@ -20,9 +20,8 @@ import java.util.Map;
  * This controller is intended for use by administrators and moderators.
  */
 @RestController
-@RequestMapping("/api/reviews/moderation")
-@CrossOrigin(origins = "*")
-@Tag(name = "Review Moderation", description = "Operations for moderating product reviews")
+@RequestMapping("/moderation")
+@Tag(name = "Review Moderation", description = "APIs for moderating reviews")
 public class ModerationController {
 
     private static final Logger log = LoggerFactory.getLogger(ModerationController.class);

@@ -24,9 +24,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/payments")
-@CrossOrigin(origins = "*")
-@Tag(name = "Payment Management", description = "APIs for payment processing")
+@RequestMapping("/payments")
+@Tag(name = "Payment Management", description = "APIs for managing payments")
 public class PaymentController {
     
     @Autowired
@@ -80,10 +79,10 @@ public class PaymentController {
     @Operation(summary = "Get User Payments", description = "Retrieves all payments for a specific user")
     public ResponseEntity<Page<PaymentResponseDto>> getUserPayments(
             @PathVariable String userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir) {
         
         Sort sort = sortDir.equalsIgnoreCase("desc") ? 
             Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
@@ -96,18 +95,18 @@ public class PaymentController {
     @GetMapping("/search")
     @Operation(summary = "Search Payments", description = "Searches payments with various criteria")
     public ResponseEntity<Page<PaymentResponseDto>> searchPayments(
-            @RequestParam(required = false) PaymentStatus status,
-            @RequestParam(required = false) PaymentMethod paymentMethod,
-            @RequestParam(required = false) String userId,
-            @RequestParam(required = false) String orderId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-            @RequestParam(required = false) BigDecimal minAmount,
-            @RequestParam(required = false) BigDecimal maxAmount,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
+            @RequestParam(name = "status", required = false) PaymentStatus status,
+            @RequestParam(name = "paymentMethod", required = false) PaymentMethod paymentMethod,
+            @RequestParam(name = "userId", required = false) String userId,
+            @RequestParam(name = "orderId", required = false) String orderId,
+            @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(name = "minAmount", required = false) BigDecimal minAmount,
+            @RequestParam(name = "maxAmount", required = false) BigDecimal maxAmount,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir) {
         
         Sort sort = sortDir.equalsIgnoreCase("desc") ? 
             Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
@@ -143,8 +142,8 @@ public class PaymentController {
     @GetMapping("/stats/daily")
     @Operation(summary = "Get Daily Payment Stats", description = "Retrieves daily payment statistics")
     public ResponseEntity<List<PaymentService.DailyPaymentStats>> getDailyPaymentStats(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+            @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         List<PaymentService.DailyPaymentStats> stats = paymentService.getDailyPaymentStats(startDate, endDate);
         return ResponseEntity.ok(stats);
     }

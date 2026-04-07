@@ -33,7 +33,7 @@ import java.util.Map;
  * and managing recommendation preferences.
  */
 @RestController
-@RequestMapping("/api/recommendations")
+@RequestMapping("/recommendations")
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Recommendations", description = "Product recommendation operations")

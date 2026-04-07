@@ -1,14 +1,14 @@
 -- Initialize databases for PostgreSQL services
 
 -- Create databases for different services
-CREATE DATABASE IF NOT EXISTS user_db;
-CREATE DATABASE IF NOT EXISTS order_db;
-CREATE DATABASE IF NOT EXISTS review_db;
-CREATE DATABASE IF NOT EXISTS recommendation_db;
-CREATE DATABASE IF NOT EXISTS payment_db;
-CREATE DATABASE IF NOT EXISTS inventory_db;
-CREATE DATABASE IF NOT EXISTS shipping_db;
-CREATE DATABASE IF NOT EXISTS notification_db;
+CREATE DATABASE user_db;
+CREATE DATABASE order_db;
+CREATE DATABASE review_db;
+CREATE DATABASE recommendation_db;
+CREATE DATABASE payment_db;
+CREATE DATABASE inventory_db;
+CREATE DATABASE shipping_db;
+CREATE DATABASE notification_db;
 
 -- Grant permissions
 GRANT ALL PRIVILEGES ON DATABASE user_db TO ecommerce;

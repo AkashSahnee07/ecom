@@ -27,9 +27,8 @@ import java.util.UUID;
  * REST Controller for notification management
  */
 @RestController
-@RequestMapping("/api/v1/notifications")
-@CrossOrigin(origins = "*")
-@Tag(name = "Notification Management", description = "APIs for sending and managing notifications")
+@RequestMapping("/notifications")
+@Tag(name = "Notification Management", description = "APIs for managing notifications")
 public class NotificationController {
     
     private static final Logger logger = LoggerFactory.getLogger(NotificationController.class);
@@ -171,10 +170,10 @@ public class NotificationController {
     @Operation(summary = "Get Notifications by Recipient", description = "Retrieves notifications for a specific recipient")
     public ResponseEntity<?> getNotificationsByRecipient(
             @PathVariable String recipientId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir) {
         
         try {
             Sort sort = sortDir.equalsIgnoreCase("desc") ? 
@@ -197,8 +196,8 @@ public class NotificationController {
     @GetMapping("/status/{status}")
     public ResponseEntity<?> getNotificationsByStatus(
             @PathVariable NotificationStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size) {
         
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -219,8 +218,8 @@ public class NotificationController {
     @Operation(summary = "Get Notifications by Type", description = "Retrieves notifications filtered by type")
     public ResponseEntity<?> getNotificationsByType(
             @PathVariable NotificationType type,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size) {
         
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -339,8 +338,8 @@ public class NotificationController {
     @GetMapping("/scheduled")
     @Operation(summary = "Get Scheduled Notifications", description = "Retrieves a list of notifications scheduled for future delivery")
     public ResponseEntity<?> getScheduledNotifications(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size) {
         
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("scheduledTime").ascending());
@@ -358,7 +357,7 @@ public class NotificationController {
      * Cancel scheduled notification
      */
     @DeleteMapping("/{id}/cancel")
-    public ResponseEntity<?> cancelNotification(@PathVariable UUID id, @RequestParam String reason) {
+    public ResponseEntity<?> cancelNotification(@PathVariable UUID id, @RequestParam(name = "reason") String reason) {
         try {
             boolean cancelled = notificationService.markAsCancelled(id, reason);
             
@@ -380,7 +379,7 @@ public class NotificationController {
      */
     @DeleteMapping("/cleanup")
     @Operation(summary = "Cleanup Old Notifications", description = "Removes notifications older than the specified number of days")
-    public ResponseEntity<?> cleanupOldNotifications(@RequestParam(defaultValue = "30") int daysOld) {
+    public ResponseEntity<?> cleanupOldNotifications(@RequestParam(name = "daysOld", defaultValue = "30") int daysOld) {
         try {
             int deletedCount = notificationService.cleanupOldNotifications(daysOld);
             return ResponseEntity.ok(Map.of(

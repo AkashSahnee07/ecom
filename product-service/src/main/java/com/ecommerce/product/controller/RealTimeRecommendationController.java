@@ -4,14 +4,15 @@ import com.ecommerce.product.dto.ProductResponseDto;
 import com.ecommerce.product.service.RealTimeRecommendationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/recommendations/realtime")
-@CrossOrigin(origins = "*")
+@RequestMapping("/real-time-recommendations")
+@Tag(name = "Real-Time Recommendation Management", description = "APIs for real-time recommendations")
 public class RealTimeRecommendationController {
     
     @Autowired
@@ -21,7 +22,7 @@ public class RealTimeRecommendationController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ProductResponseDto>> getFreshRecommendations(
             @PathVariable Long userId,
-            @RequestParam(defaultValue = "10") int limit) {
+            @RequestParam(name = "limit", defaultValue = "10") int limit) {
         try {
             List<ProductResponseDto> recommendations = realTimeRecommendationService
                 .getFreshRecommendations(userId, limit);
@@ -35,7 +36,7 @@ public class RealTimeRecommendationController {
     @PostMapping("/generate/{userId}")
     public ResponseEntity<String> generateRecommendations(
             @PathVariable Long userId,
-            @RequestParam(defaultValue = "manual") String triggerEvent) {
+            @RequestParam(name = "triggerEvent", defaultValue = "manual") String triggerEvent) {
         try {
             realTimeRecommendationService.generateRealTimeRecommendations(userId, triggerEvent);
             return ResponseEntity.ok("Real-time recommendations generated successfully");

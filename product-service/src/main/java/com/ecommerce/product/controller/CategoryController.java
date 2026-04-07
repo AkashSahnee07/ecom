@@ -17,8 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
-@CrossOrigin(origins = "*")
+@RequestMapping("/categories")
 @Tag(name = "Category Management", description = "APIs for managing product categories")
 public class CategoryController {
     
@@ -53,10 +52,10 @@ public class CategoryController {
     @GetMapping
     @Operation(summary = "Get All Categories", description = "Retrieves all categories with pagination")
     public ResponseEntity<Page<CategoryResponseDto>> getAllCategories(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "displayOrder") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sortBy", defaultValue = "displayOrder") String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = "asc") String sortDir) {
         
         Sort sort = sortDir.equalsIgnoreCase("desc") ? 
                    Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();

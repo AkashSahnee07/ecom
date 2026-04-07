@@ -13,25 +13,31 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
+    private final UserService userService;
     
-    @Autowired
-    private UserService userService;
+    public JwtAuthenticationFilter(AuthService authService, UserService userService) {
+        this.authService = authService;
+        this.userService = userService;
+    }
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, 
                                   FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(request);
+            logger.debug("JWT header present: " + (jwt != null));
             
             if (StringUtils.hasText(jwt) && authService.validateToken(jwt)) {
                 String username = authService.getUsernameFromToken(jwt);
+                logger.debug("JWT validated for subject");
                 
                 UserDetails userDetails = userService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = 

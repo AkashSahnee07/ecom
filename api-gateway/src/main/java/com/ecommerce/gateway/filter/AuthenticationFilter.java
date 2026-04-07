@@ -61,6 +61,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
         List<String> publicPaths = List.of(
             "/api/auth/login",
             "/api/auth/register",
+            "/api/users/register",
             "/api/products",
             "/actuator"
         );

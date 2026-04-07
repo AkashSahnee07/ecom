@@ -32,7 +32,7 @@ public class User implements UserDetails {
     
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
-    @Column(nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String password;
     
     @NotBlank(message = "First name is required")

@@ -13,8 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*")
-@Tag(name = "Authentication", description = "APIs for user authentication")
+@Tag(name = "Authentication Management", description = "APIs for user authentication")
 public class AuthController {
     
     @Autowired
@@ -29,7 +28,7 @@ public class AuthController {
     
     @PostMapping("/refresh")
     @Operation(summary = "Refresh Token", description = "Refreshes the JWT token")
-    public ResponseEntity<LoginResponseDto> refreshToken(@RequestParam String refreshToken) {
+    public ResponseEntity<LoginResponseDto> refreshToken(@RequestParam(name = "refreshToken") String refreshToken) {
         LoginResponseDto response = authService.refreshToken(refreshToken);
         return ResponseEntity.ok(response);
     }
@@ -43,7 +42,7 @@ public class AuthController {
     
     @PostMapping("/validate")
     @Operation(summary = "Validate Token", description = "Validates the JWT token")
-    public ResponseEntity<Boolean> validateToken(@RequestParam String token) {
+    public ResponseEntity<Boolean> validateToken(@RequestParam(name = "token") String token) {
         boolean isValid = authService.validateToken(token);
         return ResponseEntity.ok(isValid);
     }

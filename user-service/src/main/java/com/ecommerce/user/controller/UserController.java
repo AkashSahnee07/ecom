@@ -20,7 +20,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(origins = "*")
 @Tag(name = "User Management", description = "APIs for managing users")
 @SecurityRequirement(name = "bearerAuth")
 public class UserController {
@@ -37,17 +36,17 @@ public class UserController {
     }
     
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    @PreAuthorize("hasRole('ADMIN') or authentication.name == @userService.getUserById(#p0).username")
     @Operation(summary = "Get user by ID", description = "Retrieves user details by ID")
-    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable("id") Long id) {
         UserResponseDto user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
     
     @GetMapping("/username/{username}")
-    @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
+    @PreAuthorize("hasRole('ADMIN') or #p0 == authentication.name")
     @Operation(summary = "Get user by username", description = "Retrieves user details by username")
-    public ResponseEntity<UserResponseDto> getUserByUsername(@PathVariable String username) {
+    public ResponseEntity<UserResponseDto> getUserByUsername(@PathVariable("username") String username) {
         UserResponseDto user = userService.getUserByUsername(username);
         return ResponseEntity.ok(user);
     }
@@ -55,7 +54,7 @@ public class UserController {
     @GetMapping("/email/{email}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get user by email", description = "Retrieves user details by email")
-    public ResponseEntity<UserResponseDto> getUserByEmail(@PathVariable String email) {
+    public ResponseEntity<UserResponseDto> getUserByEmail(@PathVariable("email") String email) {
         UserResponseDto user = userService.getUserByEmail(email);
         return ResponseEntity.ok(user);
     }
@@ -71,15 +70,15 @@ public class UserController {
     @GetMapping("/role/{role}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get users by role", description = "Retrieves a list of users with a specific role")
-    public ResponseEntity<List<UserResponseDto>> getUsersByRole(@PathVariable User.Role role) {
+    public ResponseEntity<List<UserResponseDto>> getUsersByRole(@PathVariable("role") User.Role role) {
         List<UserResponseDto> users = userService.getUsersByRole(role);
         return ResponseEntity.ok(users);
     }
     
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    @PreAuthorize("hasRole('ADMIN') or authentication.name == @userService.getUserById(#p0).username")
     @Operation(summary = "Update user", description = "Updates user details")
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, 
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable("id") Long id, 
                                                      @Valid @RequestBody UserUpdateDto updateDto) {
         UserResponseDto user = userService.updateUser(id, updateDto);
         return ResponseEntity.ok(user);
@@ -88,7 +87,7 @@ public class UserController {
     @PutMapping("/{id}/deactivate")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Deactivate user", description = "Deactivates a user account")
-    public ResponseEntity<Void> deactivateUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deactivateUser(@PathVariable("id") Long id) {
         userService.deactivateUser(id);
         return ResponseEntity.ok().build();
     }
@@ -96,15 +95,15 @@ public class UserController {
     @PutMapping("/{id}/activate")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Activate user", description = "Activates a user account")
-    public ResponseEntity<Void> activateUser(@PathVariable Long id) {
+    public ResponseEntity<Void> activateUser(@PathVariable("id") Long id) {
         userService.activateUser(id);
         return ResponseEntity.ok().build();
     }
     
     @PostMapping("/validate")
     @Operation(summary = "Validate user credentials", description = "Validates username and password")
-    public ResponseEntity<Boolean> validateUser(@RequestParam String username, 
-                                               @RequestParam String password) {
+    public ResponseEntity<Boolean> validateUser(@RequestParam(name = "username") String username, 
+                                               @RequestParam(name = "password") String password) {
         boolean isValid = userService.validateUser(username, password);
         return ResponseEntity.ok(isValid);
     }

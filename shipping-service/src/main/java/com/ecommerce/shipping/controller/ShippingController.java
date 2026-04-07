@@ -25,7 +25,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/shipping")
+@RequestMapping("/shipping")
 @Tag(name = "Shipping", description = "Shipping management operations")
 @Validated
 public class ShippingController {
@@ -84,7 +84,7 @@ public class ShippingController {
     @GetMapping("/shipments")
     @Operation(summary = "Get shipments by status", description = "Retrieves paginated list of shipments by status")
     public ResponseEntity<Page<ShipmentDto>> getShipmentsByStatus(
-            @Parameter(description = "Shipment status") @RequestParam ShipmentStatus status,
+            @Parameter(description = "Shipment status") @RequestParam(name = "status") ShipmentStatus status,
             Pageable pageable) {
         
         logger.info("Retrieving shipments with status: {}", status);
@@ -122,7 +122,7 @@ public class ShippingController {
     @Operation(summary = "Cancel shipment", description = "Cancels a shipment")
     public ResponseEntity<ShipmentDto> cancelShipment(
             @Parameter(description = "Shipment ID") @PathVariable @NotNull Long shipmentId,
-            @Parameter(description = "Cancellation reason") @RequestParam @NotBlank String reason) {
+            @Parameter(description = "Cancellation reason") @RequestParam(name = "reason") @NotBlank String reason) {
         
         logger.info("Cancelling shipment: {} with reason: {}", shipmentId, reason);
         
