@@ -1,17 +1,21 @@
 package com.ecommerce.notification.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.HashMap;
-
-// Import the missing enum classes
-import com.ecommerce.notification.entity.NotificationType;
-import com.ecommerce.notification.entity.NotificationChannel;
-import com.ecommerce.notification.entity.NotificationStatus;
-import com.ecommerce.notification.entity.NotificationPriority;
 
 /**
  * Notification entity representing a notification record

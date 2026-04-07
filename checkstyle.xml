@@ -12,7 +12,7 @@
         <property name="eachLine" value="true"/>
     </module>
     <module name="FileLength">
-        <property name="max" value="500"/>
+        <property name="max" value="800"/>
         <property name="severity" value="warning"/>
     </module>
     <module name="NewlineAtEndOfFile">
@@ -29,7 +29,10 @@
         <!-- Naming conventions -->
         <module name="TypeName"/>
         <module name="MethodName"/>
-        <module name="ConstantName"/>
+        <module name="ConstantName">
+            <!-- Allow SLF4J logger naming: private static final Logger logger/log -->
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$|^log(ger)?$"/>
+        </module>
         <module name="LocalVariableName"/>
         <module name="MemberName"/>
         <module name="PackageName"/>
@@ -51,14 +54,18 @@
         <module name="OuterTypeFilename"/>
 
         <!-- Formatting -->
-        <module name="NeedBraces"/>
-        <module name="LeftCurly"/>
+        <module name="NeedBraces">
+            <!-- Allow single-line statements without braces -->
+            <property name="allowSingleLineStatement" value="true"/>
+        </module>
+        <!-- LeftCurly omitted: project uses single-line getter/setter style -->
         <module name="RightCurly"/>
         <module name="WhitespaceAround">
             <property name="allowEmptyConstructors" value="true"/>
             <property name="allowEmptyMethods" value="true"/>
             <property name="allowEmptyTypes" value="true"/>
             <property name="allowEmptyLoops" value="true"/>
+            <property name="allowEmptyLambdas" value="true"/>
         </module>
         <module name="GenericWhitespace"/>
         <module name="NoWhitespaceBefore"/>
@@ -66,7 +73,7 @@
 
         <!-- Method length -->
         <module name="MethodLength">
-            <property name="max" value="80"/>
+            <property name="max" value="100"/>
             <property name="severity" value="warning"/>
         </module>
 

@@ -2,23 +2,16 @@ package com.ecommerce.order.config;
 
 import brave.Tracing;
 import brave.context.slf4j.MDCScopeDecorator;
-import brave.propagation.B3Propagation;
 import brave.propagation.ThreadLocalCurrentTraceContext;
 import brave.sampler.Sampler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.sleuth.annotation.NewSpan;
-import org.springframework.cloud.sleuth.annotation.SpanTag;
+import org.springframework.cloud.sleuth.Span;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Custom tracing configuration for Order Service.
@@ -138,91 +131,91 @@ public class TracingConfig implements WebMvcConfigurer {
         }
     }
     */
-}
-
-/**
- * Custom tracing aspect for business logic methods
- * Temporarily disabled due to Spring Cloud Sleuth compatibility issues
- */
-// @org.aspectj.lang.annotation.Aspect
-// @org.springframework.stereotype.Component
-class OrderTracingAspect {
-
-    @Autowired
-    private Tracer tracer;
 
     /**
-     * Trace all service methods
+     * Custom tracing aspect for business logic methods
+     * Temporarily disabled due to Spring Cloud Sleuth compatibility issues
      */
-    @org.aspectj.lang.annotation.Around("execution(* com.ecommerce.order.service..*(..))")
-    public Object traceServiceMethods(org.aspectj.lang.ProceedingJoinPoint joinPoint) throws Throwable {
-        
-        String className = joinPoint.getTarget().getClass().getSimpleName();
-        String methodName = joinPoint.getSignature().getName();
-        
-        Span span = tracer.nextSpan()
-                .name(className + "." + methodName)
-                .tag("component", "service")
-                .tag("class", className)
-                .tag("method", methodName);
-        
-        span.start();
-        try (Tracer.SpanInScope ws = tracer.withSpan(span)) {
-            // Add method parameters as tags (be careful with sensitive data)
-            Object[] args = joinPoint.getArgs();
-            for (int i = 0; i < args.length && i < 3; i++) { // Limit to first 3 args
-                if (args[i] != null) {
-                    span.tag("arg." + i, args[i].toString());
+    // @org.aspectj.lang.annotation.Aspect
+    // @org.springframework.stereotype.Component
+    static class OrderTracingAspect {
+
+        @Autowired
+        private Tracer tracer;
+
+        /**
+         * Trace all service methods
+         */
+        @org.aspectj.lang.annotation.Around("execution(* com.ecommerce.order.service..*(..))")
+        public Object traceServiceMethods(org.aspectj.lang.ProceedingJoinPoint joinPoint) throws Throwable {
+
+            String className = joinPoint.getTarget().getClass().getSimpleName();
+            String methodName = joinPoint.getSignature().getName();
+
+            Span span = tracer.nextSpan()
+                    .name(className + "." + methodName)
+                    .tag("component", "service")
+                    .tag("class", className)
+                    .tag("method", methodName);
+
+            span.start();
+            try (Tracer.SpanInScope ws = tracer.withSpan(span)) {
+                // Add method parameters as tags (be careful with sensitive data)
+                Object[] args = joinPoint.getArgs();
+                for (int i = 0; i < args.length && i < 3; i++) { // Limit to first 3 args
+                    if (args[i] != null) {
+                        span.tag("arg." + i, args[i].toString());
+                    }
                 }
-            }
-            
-            Object result = joinPoint.proceed();
-            
-            // Add success tag
-            span.tag("success", "true");
-            
-            return result;
-            
-        } catch (Exception e) {
-            // Add error information
-            span.tag("error", "true");
-            span.tag("error.message", e.getMessage());
-            span.tag("error.class", e.getClass().getSimpleName());
-            
-            throw e;
-        } finally {
-            span.end();
-        }
-    }
 
-    /**
-     * Trace repository methods
-     */
-    @org.aspectj.lang.annotation.Around("execution(* com.ecommerce.order.repository..*(..))")
-    public Object traceRepositoryMethods(org.aspectj.lang.ProceedingJoinPoint joinPoint) throws Throwable {
-        
-        String className = joinPoint.getTarget().getClass().getSimpleName();
-        String methodName = joinPoint.getSignature().getName();
-        
-        Span span = tracer.nextSpan()
-                .name("db." + methodName)
-                .tag("component", "database")
-                .tag("db.type", "postgresql")
-                .tag("db.operation", methodName)
-                .tag("repository", className);
-        
-        span.start();
-        try (Tracer.SpanInScope ws = tracer.withSpan(span)) {
-            Object result = joinPoint.proceed();
-            span.tag("success", "true");
-            return result;
-            
-        } catch (Exception e) {
-            span.tag("error", "true");
-            span.tag("error.message", e.getMessage());
-            throw e;
-        } finally {
-            span.end();
+                Object result = joinPoint.proceed();
+
+                // Add success tag
+                span.tag("success", "true");
+
+                return result;
+
+            } catch (Exception e) {
+                // Add error information
+                span.tag("error", "true");
+                span.tag("error.message", e.getMessage());
+                span.tag("error.class", e.getClass().getSimpleName());
+
+                throw e;
+            } finally {
+                span.end();
+            }
+        }
+
+        /**
+         * Trace repository methods
+         */
+        @org.aspectj.lang.annotation.Around("execution(* com.ecommerce.order.repository..*(..))")
+        public Object traceRepositoryMethods(org.aspectj.lang.ProceedingJoinPoint joinPoint) throws Throwable {
+
+            String className = joinPoint.getTarget().getClass().getSimpleName();
+            String methodName = joinPoint.getSignature().getName();
+
+            Span span = tracer.nextSpan()
+                    .name("db." + methodName)
+                    .tag("component", "database")
+                    .tag("db.type", "postgresql")
+                    .tag("db.operation", methodName)
+                    .tag("repository", className);
+
+            span.start();
+            try (Tracer.SpanInScope ws = tracer.withSpan(span)) {
+                Object result = joinPoint.proceed();
+                span.tag("success", "true");
+                return result;
+
+            } catch (Exception e) {
+                span.tag("error", "true");
+                span.tag("error.message", e.getMessage());
+                throw e;
+            } finally {
+                span.end();
+            }
         }
     }
 }

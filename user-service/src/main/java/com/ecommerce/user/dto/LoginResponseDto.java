@@ -1,6 +1,5 @@
 package com.ecommerce.user.dto;
 
-import com.ecommerce.user.entity.User;
 
 public class LoginResponseDto {
     

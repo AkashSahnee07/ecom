@@ -8,7 +8,20 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.Table;
 import java.util.UUID;
 
 import java.time.LocalDateTime;
@@ -330,12 +343,30 @@ public class ProductSimilarity {
         double total = 0.0;
         int count = 0;
         
-        if (priceSimilarity != null) { total += priceSimilarity; count++; }
-        if (featureSimilarity != null) { total += featureSimilarity; count++; }
-        if (descriptionSimilarity != null) { total += descriptionSimilarity; count++; }
-        if (ratingSimilarity != null) { total += ratingSimilarity; count++; }
-        if (visualSimilarity != null) { total += visualSimilarity; count++; }
-        if (tagSimilarity != null) { total += tagSimilarity; count++; }
+        if (priceSimilarity != null) {
+            total += priceSimilarity;
+            count++;
+        }
+        if (featureSimilarity != null) {
+            total += featureSimilarity;
+            count++;
+        }
+        if (descriptionSimilarity != null) {
+            total += descriptionSimilarity;
+            count++;
+        }
+        if (ratingSimilarity != null) {
+            total += ratingSimilarity;
+            count++;
+        }
+        if (visualSimilarity != null) {
+            total += visualSimilarity;
+            count++;
+        }
+        if (tagSimilarity != null) {
+            total += tagSimilarity;
+            count++;
+        }
         
         return count > 0 ? total / count : 0.0;
     }

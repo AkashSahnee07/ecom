@@ -1,6 +1,9 @@
 package com.ecommerce.product.service;
 
-import com.ecommerce.product.dto.*;
+import com.ecommerce.product.dto.ProductCreateDto;
+import com.ecommerce.product.dto.ProductResponseDto;
+import com.ecommerce.product.dto.ProductSearchDto;
+import com.ecommerce.product.dto.ProductUpdateDto;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.exception.ProductNotFoundException;
 import com.ecommerce.product.exception.ProductAlreadyExistsException;

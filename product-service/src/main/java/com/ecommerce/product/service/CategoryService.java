@@ -1,6 +1,9 @@
 package com.ecommerce.product.service;
 
-import com.ecommerce.product.dto.*;
+import com.ecommerce.product.dto.CategoryCreateDto;
+import com.ecommerce.product.dto.CategoryHierarchyDto;
+import com.ecommerce.product.dto.CategoryResponseDto;
+import com.ecommerce.product.dto.CategoryUpdateDto;
 import com.ecommerce.product.entity.Category;
 import com.ecommerce.product.exception.CategoryNotFoundException;
 import com.ecommerce.product.exception.CategoryAlreadyExistsException;

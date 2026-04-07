@@ -1,19 +1,27 @@
 package com.ecommerce.notification.service;
 
-import com.ecommerce.notification.entity.*;
+import com.ecommerce.notification.entity.Notification;
+import com.ecommerce.notification.entity.NotificationChannel;
+import com.ecommerce.notification.entity.NotificationPriority;
+import com.ecommerce.notification.entity.NotificationStatus;
+import com.ecommerce.notification.entity.NotificationType;
 import com.ecommerce.notification.repository.NotificationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**

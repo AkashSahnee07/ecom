@@ -2,7 +2,6 @@ package com.ecommerce.recommendation.service;
 
 import com.ecommerce.recommendation.entity.ProductRecommendation;
 import com.ecommerce.recommendation.entity.UserBehavior;
-import com.ecommerce.recommendation.entity.UserProfile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -12,7 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**

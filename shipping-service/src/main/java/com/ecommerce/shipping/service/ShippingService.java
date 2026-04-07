@@ -288,6 +288,8 @@ public class ShippingService {
             case CANCELLED:
                 // No cancelled date field in entity
                 break;
+            default:
+                break;
         }
     }
     

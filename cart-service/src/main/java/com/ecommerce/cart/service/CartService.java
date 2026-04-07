@@ -1,6 +1,10 @@
 package com.ecommerce.cart.service;
 
-import com.ecommerce.cart.dto.*;
+import com.ecommerce.cart.dto.AddToCartDto;
+import com.ecommerce.cart.dto.CartItemDto;
+import com.ecommerce.cart.dto.CartMergeDto;
+import com.ecommerce.cart.dto.CartResponseDto;
+import com.ecommerce.cart.dto.CartSummaryDto;
 import com.ecommerce.cart.entity.Cart;
 import com.ecommerce.cart.entity.CartItem;
 import com.ecommerce.cart.exception.CartNotFoundException;
@@ -10,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
