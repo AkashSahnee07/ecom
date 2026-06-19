@@ -1,12 +1,35 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ShoppingBag, Zap, Star, TrendingUp, Package } from 'lucide-react';
-import { productsAPI } from '../api/products.api';
+import { productsAPI, categoriesAPI } from '../api/products.api';
 import { recommendationsAPI } from '../api/recommendations.api';
 import ProductCard from '../components/ProductCard';
 import { SkeletonCard } from '../components/Loader';
 import useAuthStore from '../store/auth.store';
 import './HomePage.css';
+
+const FALLBACK_CATEGORIES = [
+  { id: 1, name: 'Electronics', icon: '⚡', color: '#6366f1' },
+  { id: 2, name: 'Fashion',     icon: '👗', color: '#ec4899' },
+  { id: 3, name: 'Home',        icon: '🏠', color: '#f59e0b' },
+  { id: 4, name: 'Sports',      icon: '⚽', color: '#10b981' },
+  { id: 5, name: 'Books',       icon: '📚', color: '#22d3ee' },
+  { id: 6, name: 'Beauty',      icon: '💄', color: '#f43f5e' },
+];
+
+const CATEGORY_STYLES = {
+  electronics: { icon: '⚡', color: '#6366f1' },
+  fashion:     { icon: '👗', color: '#ec4899' },
+  home:        { icon: '🏠', color: '#f59e0b' },
+  sports:      { icon: '⚽', color: '#10b981' },
+  books:       { icon: '📚', color: '#22d3ee' },
+  beauty:      { icon: '💄', color: '#f43f5e' },
+};
+
+const getCategoryStyle = (name) => {
+  const key = name?.toLowerCase();
+  return CATEGORY_STYLES[key] || { icon: '🛍️', color: '#6366f1' };
+};
 
 export default function HomePage() {
   const { user } = useAuthStore();
@@ -14,7 +37,23 @@ export default function HomePage() {
   const [topRated, setTopRated] = useState([]);
   const [recent, setRecent] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
+  const [categories, setCategories] = useState(FALLBACK_CATEGORIES);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    categoriesAPI.getAll()
+      .then(res => {
+        const cats = res.data?.content || res.data || [];
+        if (cats.length > 0) {
+          setCategories(cats.slice(0, 6).map(cat => ({
+            id: cat.id,
+            name: cat.name,
+            ...getCategoryStyle(cat.name),
+          })));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,7 +75,6 @@ export default function HomePage() {
           setRecent(recRes.value.data?.content || recRes.value.data || []);
         }
 
-        // Load personalized recommendations if logged in
         if (user?.id) {
           try {
             const recsRes = await recommendationsAPI.getForUser(user.id, { limit: 8 });
@@ -51,15 +89,6 @@ export default function HomePage() {
     };
     fetchData();
   }, [user?.id]);
-
-  const CATEGORIES = [
-    { id: 1, name: 'Electronics', icon: '⚡', color: '#6366f1' },
-    { id: 2, name: 'Fashion',     icon: '👗', color: '#ec4899' },
-    { id: 3, name: 'Home',        icon: '🏠', color: '#f59e0b' },
-    { id: 4, name: 'Sports',      icon: '⚽', color: '#10b981' },
-    { id: 5, name: 'Books',       icon: '📚', color: '#22d3ee' },
-    { id: 6, name: 'Beauty',      icon: '💄', color: '#f43f5e' },
-  ];
 
   const STATS = [
     { icon: <ShoppingBag size={22} />, value: '50K+', label: 'Products',     color: '#6366f1' },
@@ -105,7 +134,6 @@ export default function HomePage() {
               )}
             </div>
 
-            {/* Stats */}
             <div className="hero-stats">
               {STATS.map((s, i) => (
                 <div key={i} className="hero-stat">
@@ -132,7 +160,7 @@ export default function HomePage() {
           </div>
 
           <div className="categories-grid">
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <Link
                 key={cat.id}
                 to={`/products?categoryId=${cat.id}`}
@@ -211,6 +239,26 @@ export default function HomePage() {
         </section>
       )}
 
+      {/* ── Recently Added ─────────────────────────────────────── */}
+      {recent.length > 0 && (
+        <section className="section" style={{ borderTop: '1px solid var(--border)' }}>
+          <div className="container">
+            <div className="section-header">
+              <div>
+                <h2 className="section-title">Recently Added</h2>
+                <p className="section-subtitle">Fresh arrivals in our catalog</p>
+              </div>
+              <Link to="/products?sort=id,desc" id="home-recent-link" className="btn btn-ghost btn-sm">
+                View All <ArrowRight size={14} />
+              </Link>
+            </div>
+            <div className="grid-4">
+              {recent.map(p => <ProductCard key={p.id} product={p} />)}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ── Top Rated ────────────────────────────────────────── */}
       {topRated.length > 0 && (
         <section className="section" style={{ borderTop: '1px solid var(--border)' }}>
@@ -220,7 +268,7 @@ export default function HomePage() {
                 <h2 className="section-title">Top Rated</h2>
                 <p className="section-subtitle">Products loved by our customers</p>
               </div>
-              <Link to="/products?sort=top-rated" id="home-top-rated-link" className="btn btn-ghost btn-sm">
+              <Link to="/products?sort=averageRating,desc" id="home-top-rated-link" className="btn btn-ghost btn-sm">
                 View All <ArrowRight size={14} />
               </Link>
             </div>

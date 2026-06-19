@@ -5,6 +5,7 @@ import { productsAPI, categoriesAPI } from '../api/products.api';
 import ProductCard from '../components/ProductCard';
 import { SkeletonCard } from '../components/Loader';
 import { generatePageNumbers, debounce } from '../utils/helpers';
+import toast from 'react-hot-toast';
 import './ProductsPage.css';
 
 const SORT_OPTIONS = [
@@ -14,6 +15,11 @@ const SORT_OPTIONS = [
   { value: 'averageRating,desc', label: 'Top Rated' },
   { value: 'name,asc', label: 'Name A-Z' },
 ];
+
+const normalizeSort = (sort) => {
+  if (sort === 'top-rated') return 'averageRating,desc';
+  return sort || 'id,asc';
+};
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -27,9 +33,10 @@ export default function ProductsPage() {
   const page = parseInt(searchParams.get('page') || '0');
   const search = searchParams.get('search') || '';
   const categoryId = searchParams.get('categoryId') || '';
-  const sortParam = searchParams.get('sort') || 'id,asc';
+  const sortParam = normalizeSort(searchParams.get('sort'));
   const minPrice = searchParams.get('minPrice') || '';
   const maxPrice = searchParams.get('maxPrice') || '';
+  const featured = searchParams.get('featured') === 'true';
 
   const [searchInput, setSearchInput] = useState(search);
 
@@ -47,13 +54,18 @@ export default function ProductsPage() {
     try {
       let res;
       const pageParams = { page, size: 12, sortBy, sortDir };
+      const hasFilters = search || categoryId || minPrice || maxPrice || featured;
 
-      if (search) {
-        res = await productsAPI.search(search, pageParams);
-      } else if (categoryId) {
-        res = await productsAPI.getByCategory(categoryId, pageParams);
-      } else if (minPrice || maxPrice) {
-        res = await productsAPI.getByPriceRange(minPrice || 0, maxPrice || 999999, pageParams);
+      if (featured && !search && !categoryId && !minPrice && !maxPrice) {
+        res = await productsAPI.getFeatured(pageParams);
+      } else if (hasFilters) {
+        const searchDto = {};
+        if (search) searchDto.keyword = search;
+        if (categoryId) searchDto.categoryId = Number(categoryId);
+        if (minPrice) searchDto.minPrice = Number(minPrice);
+        if (maxPrice) searchDto.maxPrice = Number(maxPrice);
+        if (featured) searchDto.featured = true;
+        res = await productsAPI.advancedSearch(searchDto, pageParams);
       } else {
         res = await productsAPI.getAll(pageParams);
       }
@@ -64,13 +76,18 @@ export default function ProductsPage() {
       setTotalElements(data?.totalElements || (data?.length || 0));
     } catch (err) {
       console.error('Products fetch error:', err);
+      toast.error(err.response?.data?.message || 'Failed to load products');
       setProducts([]);
     } finally {
       setLoading(false);
     }
-  }, [page, search, categoryId, sortBy, sortDir, minPrice, maxPrice]);
+  }, [page, search, categoryId, sortBy, sortDir, minPrice, maxPrice, featured]);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
+
+  useEffect(() => {
+    setSearchInput(search);
+  }, [search]);
 
   useEffect(() => {
     categoriesAPI.getAll().then(res => {
@@ -87,14 +104,14 @@ export default function ProductsPage() {
     setSearchInput('');
   };
 
-  const hasFilters = search || categoryId || minPrice || maxPrice;
+  const hasFilters = search || categoryId || minPrice || maxPrice || featured;
 
   return (
     <div className="page-wrapper">
       <div className="container">
         <div className="page-header">
           <div>
-            <h1 className="page-title">All Products</h1>
+            <h1 className="page-title">{featured ? 'Featured Products' : 'All Products'}</h1>
             <p className="text-secondary text-sm" style={{ marginTop: '8px' }}>
               {totalElements > 0 ? `${totalElements.toLocaleString()} products found` : 'Browse our catalog'}
             </p>
@@ -211,6 +228,18 @@ export default function ProductsPage() {
                   onChange={(e) => updateParam('maxPrice', e.target.value)}
                   style={{ width: '120px' }}
                 />
+              </div>
+            </div>
+
+            <div className="filter-section">
+              <h4 className="filter-title">Special</h4>
+              <div className="filter-chips">
+                <button
+                  className={`filter-chip ${featured ? 'active' : ''}`}
+                  onClick={() => updateParam('featured', featured ? '' : 'true')}
+                >
+                  Featured only
+                </button>
               </div>
             </div>
           </div>

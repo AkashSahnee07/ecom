@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, Minus, Plus, ShoppingCart, ArrowRight, Tag } from 'lucide-react';
 import useAuthStore from '../store/auth.store';
@@ -14,10 +14,19 @@ export default function CartPage() {
   const { user } = useAuthStore();
   const { cart, loading, fetchCart, updateQuantity, removeItem, clearCart } = useCartStore();
   const navigate = useNavigate();
+  const [crossSell, setCrossSell] = useState([]);
 
   useEffect(() => {
     if (user?.id) fetchCart(user.id);
-  }, [user?.id]);
+  }, [user?.id, fetchCart]);
+
+  useEffect(() => {
+    if (!user?.id || !cart?.items?.length) return;
+    const productIds = cart.items.map((item) => item.productId).join(',');
+    recommendationsAPI.getCrossSell(productIds, user.id, 4)
+      .then((res) => setCrossSell(res.data || []))
+      .catch(() => setCrossSell([]));
+  }, [user?.id, cart?.items]);
 
   if (!user) {
     return (
@@ -206,6 +215,22 @@ export default function CartPage() {
             </div>
           </div>
         </div>
+
+        {crossSell.length > 0 && (
+          <section style={{ marginTop: '48px' }}>
+            <h2 className="font-bold" style={{ fontSize: '20px', marginBottom: '20px' }}>
+              You might also like
+            </h2>
+            <div className="grid-4">
+              {crossSell.map((rec, i) => (
+                <ProductCard
+                  key={rec.productId || i}
+                  product={{ id: rec.productId, name: rec.productName, price: rec.price, ...rec }}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

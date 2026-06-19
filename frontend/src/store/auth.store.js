@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { authAPI } from '../api/auth.api';
+import { authAPI, userAPI } from '../api/auth.api';
+import useCartStore from './cart.store';
 
 const useAuthStore = create((set, get) => ({
   user: JSON.parse(localStorage.getItem('user') || 'null'),
@@ -16,6 +17,9 @@ const useAuthStore = create((set, get) => ({
       localStorage.setItem('user', JSON.stringify(user));
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
       set({ user, token, loading: false });
+      if (user?.id) {
+        useCartStore.getState().fetchCart(user.id);
+      }
       return { success: true };
     } catch (err) {
       const msg = err.response?.data?.message || 'Login failed';
@@ -27,7 +31,7 @@ const useAuthStore = create((set, get) => ({
   register: async (data) => {
     set({ loading: true, error: null });
     try {
-      const res = await authAPI.register(data);
+      const res = await userAPI.register(data);
       set({ loading: false });
       return { success: true, data: res.data };
     } catch (err) {
@@ -41,6 +45,7 @@ const useAuthStore = create((set, get) => ({
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('refreshToken');
+    useCartStore.getState().resetCart();
     set({ user: null, token: null });
   },
 

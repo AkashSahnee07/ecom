@@ -1,16 +1,70 @@
-# React + Vite
+# ShopSphere Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite storefront for the e-commerce microservices platform.
 
-Currently, two official plugins are available:
+## Prerequisites
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js 18+
+- Backend API Gateway running on `http://localhost:8080`
 
-## React Compiler
+## Quick Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+The app runs at [http://localhost:5173](http://localhost:5173).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+API requests are proxied to the gateway via Vite (`/api` → `http://localhost:8080`).
+
+## Backend Setup
+
+Start infrastructure and microservices before using the frontend:
+
+```bash
+# From repo root — start infrastructure (Postgres, Redis, Kafka, etc.)
+docker-compose -f docker-compose-zipkin.yml up -d
+
+# Start services (Eureka → Config → Gateway → business services)
+# See ../README.md for full startup order
+```
+
+The API Gateway must be reachable at port **8080**.
+
+## Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server with HMR |
+| `npm run build` | Production build to `dist/` |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+
+## Features
+
+- Product catalog with search, filters, and sorting
+- Shopping cart with live badge sync
+- Checkout with payment processing
+- Order history and tracking
+- User authentication (login / register)
+- Personalized recommendations
+- Admin dashboard (read-only)
+
+## Project Structure
+
+```
+src/
+  api/          # Axios API clients per microservice
+  components/   # Shared UI components
+  pages/        # Route pages
+  store/        # Zustand state (auth, cart)
+  utils/        # Helpers and formatters
+```
+
+## Environment Notes
+
+- Dev: Vite proxy handles `/api` — no CORS issues
+- Production preview: API Gateway CORS allows `http://localhost:5173`
+- For custom API URL, update `frontend/vite.config.js` proxy target

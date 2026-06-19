@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Star, Heart, Package, Truck, Shield, ChevronLeft, Minus, Plus } from 'lucide-react';
+import { ShoppingCart, Star, Package, Truck, Shield, ChevronLeft, Minus, Plus } from 'lucide-react';
 import { productsAPI } from '../api/products.api';
 import { inventoryAPI } from '../api/inventory.api';
 import { reviewsAPI } from '../api/reviews.api';

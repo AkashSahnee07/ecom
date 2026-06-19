@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Zap, ArrowRight } from 'lucide-react';
 import useAuthStore from '../store/auth.store';
 import toast from 'react-hot-toast';
@@ -10,6 +10,8 @@ export default function LoginPage() {
   const [showPass, setShowPass] = useState(false);
   const { login, loading } = useAuthStore();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/';
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -22,7 +24,7 @@ export default function LoginPage() {
     const result = await login({ email: form.email, password: form.password });
     if (result.success) {
       toast.success('Welcome back!');
-      navigate('/');
+      navigate(redirectTo.startsWith('/') ? redirectTo : '/');
     } else {
       toast.error(result.error || 'Login failed');
     }
