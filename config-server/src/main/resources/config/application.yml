@@ -1,5 +1,9 @@
 # Common configuration for all services
 spring:
+  config:
+    import:
+      - optional:classpath:config/jwt-common.yml
+
   sleuth:
     zipkin:
       base-url: http://localhost:9411

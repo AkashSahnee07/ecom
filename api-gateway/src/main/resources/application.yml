@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: api-gateway
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 2
   cloud:
     compatibility-verifier:
       enabled: false
@@ -116,7 +121,10 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "http://localhost:3000"
+            allowedOrigins:
+              - "http://localhost:5173"
+              - "http://localhost:3000"
+              - "http://localhost:3001"
             allowedMethods:
               - GET
               - POST
@@ -139,7 +147,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,gateway
+        include: health,info,metrics,gateway,prometheus
   endpoint:
     health:
       show-details: always
@@ -154,6 +162,18 @@ management:
   zipkin:
     tracing:
       endpoint: http://localhost:9411/api/v2/spans
+
+jwt:
+  secret: ${JWT_SECRET:mySecretKeybXlTdXBlclNlY3JldEtleUZvckpXVEhTQTI1Ng==}
+  issuer: ecommerce-platform
+  access-token-ttl: 900000
+  refresh-token-ttl: 604800000
+  public-paths:
+    - /api/auth/login
+    - /api/auth/register
+    - /api/auth/refresh
+    - /api/users/register
+    - /actuator
 
 info:
   app:

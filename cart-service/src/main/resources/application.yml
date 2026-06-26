@@ -114,3 +114,14 @@ springdoc:
     path: /cart/v3/api-docs
   swagger-ui:
     path: /cart/swagger-ui.html
+
+jwt:
+  secret: ${JWT_SECRET:mySecretKeybXlTdXBlclNlY3JldEtleUZvckpXVEhTQTI1Ng==}
+  issuer: ecommerce-platform
+  access-token-ttl: 900000
+  refresh-token-ttl: 604800000
+  resource-server:
+    enabled: true
+  public-paths:
+    - /cart/health
+    - /actuator

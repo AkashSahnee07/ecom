@@ -26,12 +26,14 @@
         <sleuth.version>3.1.9</sleuth.version>
         <brave.version>6.0.3</brave.version>
         <springdoc.version>1.8.0</springdoc.version>
+        <jjwt.version>0.11.5</jjwt.version>
         <jacoco.version>0.8.12</jacoco.version>
         <checkstyle-plugin.version>3.4.0</checkstyle-plugin.version>
         <checkstyle.version>10.17.0</checkstyle.version>
     </properties>
 
     <modules>
+        <module>common-security</module>
         <module>eureka-server</module>
         <module>api-gateway</module>
         <module>config-server</module>
@@ -109,6 +111,26 @@
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-ui</artifactId>
                 <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ecommerce</groupId>
+                <artifactId>common-security</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

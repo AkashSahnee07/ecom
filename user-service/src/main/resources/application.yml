@@ -8,6 +8,12 @@ spring:
   config:
     import: configserver:http://localhost:8888
   
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 1
+  
   datasource:
     url: jdbc:postgresql://localhost:5432/user_db
     username: ecommerce
@@ -33,17 +39,11 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "*"
+        spring.json.trusted.packages: "com.ecommerce.*"
   
   cloud:
     compatibility-verifier:
       enabled: false
-  
-  sleuth:
-    zipkin:
-      base-url: http://localhost:9411
-    sampler:
-      probability: 1.0
 
 eureka:
   client:
@@ -63,12 +63,20 @@ management:
   endpoint:
     health:
       show-details: always
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING:0.1}
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
 
-app:
-  jwt:
-    secret: ${JWT_SECRET:mySecretKeybXlTdXBlclNlY3JldEtleUZvckpXVEhTQTI1Ng==}
-    expiration: 86400000  # 24 hours
-    refresh-expiration: 604800000  # 7 days
+jwt:
+  secret: ${JWT_SECRET:mySecretKeybXlTdXBlclNlY3JldEtleUZvckpXVEhTQTI1Ng==}
+  issuer: ecommerce-platform
+  access-token-ttl: 900000
+  refresh-token-ttl: 604800000
+  resource-server:
+    enabled: false
 
 logging:
   level:

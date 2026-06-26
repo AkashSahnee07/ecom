@@ -1,0 +1,24 @@
+# Prometheus metrics collection
+prometheus:
+  image: prom/prometheus:v2.53.0
+  container_name: ecom-prometheus
+  ports:
+    - "9090:9090"
+  volumes:
+    - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  networks:
+    - ecom-network
+
+# Grafana dashboards
+grafana:
+  image: grafana/grafana:11.1.0
+  container_name: ecom-grafana
+  ports:
+    - "3002:3000"
+  environment:
+    GF_SECURITY_ADMIN_USER: admin
+    GF_SECURITY_ADMIN_PASSWORD: admin123
+  depends_on:
+    - prometheus
+  networks:
+    - ecom-network
