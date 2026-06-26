@@ -1,0 +1,39 @@
+# Generic multi-stage Dockerfile for any Spring Boot microservice
+# Build from repo root:
+#   docker build -f deployment/docker/Dockerfile.service \
+#     --build-arg SERVICE_MODULE=cart-service \
+#     -t ecommerce/cart-service:latest .
+
+FROM maven:3.9-eclipse-temurin-17 AS builder
+ARG SERVICE_MODULE
+WORKDIR /build
+COPY pom.xml .
+COPY common-security/pom.xml common-security/
+COPY eureka-server/pom.xml eureka-server/
+COPY config-server/pom.xml config-server/
+COPY api-gateway/pom.xml api-gateway/
+COPY user-service/pom.xml user-service/
+COPY product-service/pom.xml product-service/
+COPY cart-service/pom.xml cart-service/
+COPY order-service/pom.xml order-service/
+COPY payment-service/pom.xml payment-service/
+COPY inventory-service/pom.xml inventory-service/
+COPY recommendation-service/pom.xml recommendation-service/
+COPY shipping-service/pom.xml shipping-service/
+COPY review-service/pom.xml review-service/
+COPY notification-service/pom.xml notification-service/
+RUN mvn -B dependency:go-offline -pl ${SERVICE_MODULE} -am || true
+COPY . .
+RUN mvn -B package -DskipTests -pl ${SERVICE_MODULE} -am
+
+FROM eclipse-temurin:17-jre-alpine
+ARG SERVICE_MODULE
+RUN addgroup -S ecommerce && adduser -S ecommerce -G ecommerce
+USER ecommerce
+WORKDIR /app
+COPY --from=builder /build/${SERVICE_MODULE}/target/${SERVICE_MODULE}-*.jar app.jar
+EXPOSE 8080
+ENV JAVA_OPTS="-XX:+UseG1GC -XX:MaxRAMPercentage=75.0"
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD wget -qO- http://localhost:${SERVER_PORT:-8080}/actuator/health/liveness || exit 1
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
