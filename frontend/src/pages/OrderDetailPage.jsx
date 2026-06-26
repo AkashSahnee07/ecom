@@ -7,16 +7,14 @@ import { paymentsAPI } from '../api/payments.api';
 import StatusBadge from '../components/StatusBadge';
 import { PageLoader } from '../components/Loader';
 import { formatCurrency, formatDateTime, getOrderStatusColor, getPaymentStatusColor, getShipmentStatusColor } from '../utils/helpers';
-import useAuthStore from '../store/auth.store';
 import toast from 'react-hot-toast';
 import './OrderDetailPage.css';
-
 export default function OrderDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuthStore();
   const [order, setOrder] = useState(null);
   const [shipment, setShipment] = useState(null);
+  const [trackingEvents, setTrackingEvents] = useState([]);
   const [payment, setPayment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
@@ -29,7 +27,17 @@ export default function OrderDetailPage() {
         setOrder(orderRes.data);
 
         await Promise.allSettled([
-          shippingAPI.getByOrderId(id).then(r => setShipment(r.data)).catch(() => {}),
+          shippingAPI.getByOrderId(id).then(async (r) => {
+            setShipment(r.data);
+            if (r.data?.id) {
+              try {
+                const eventsRes = await shippingAPI.getTrackingEvents(r.data.id);
+                setTrackingEvents(eventsRes.data || []);
+              } catch {
+                setTrackingEvents([]);
+              }
+            }
+          }).catch(() => {}),
           paymentsAPI.getByOrderId(id).then(r => setPayment(r.data)).catch(() => {}),
         ]);
       } catch {
@@ -61,6 +69,8 @@ export default function OrderDetailPage() {
   if (!order) return null;
 
   const canCancel = ['PENDING', 'PROCESSING'].includes(order.status);
+  const shippingAmount = order.shippingAmount ?? 0;
+  const subtotal = order.totalAmount - shippingAmount;
 
   return (
     <div className="page-wrapper">
@@ -156,6 +166,30 @@ export default function OrderDetailPage() {
                     Est. Delivery: {formatDateTime(shipment.estimatedDelivery)}
                   </p>
                 )}
+                {trackingEvents.length > 0 && (
+                  <div className="tracking-timeline" style={{ marginTop: '16px' }}>
+                    {trackingEvents.map((event, i) => (
+                      <div key={event.id || i} className="tracking-event" style={{
+                        display: 'flex', gap: '12px', padding: '8px 0',
+                        borderLeft: i < trackingEvents.length - 1 ? '2px solid var(--border)' : 'none',
+                        marginLeft: '6px', paddingLeft: '16px',
+                      }}>
+                        <div>
+                          <p className="font-semibold text-sm">{event.status?.replace(/_/g, ' ')}</p>
+                          {event.description && (
+                            <p className="text-secondary text-xs">{event.description}</p>
+                          )}
+                          {event.location && (
+                            <p className="text-muted text-xs">{event.location}</p>
+                          )}
+                          {event.eventTimestamp && (
+                            <p className="text-muted text-xs">{formatDateTime(event.eventTimestamp)}</p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -200,11 +234,13 @@ export default function OrderDetailPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                   <span className="text-secondary">Subtotal</span>
-                  <span>{formatCurrency(order.totalAmount)}</span>
+                  <span>{formatCurrency(subtotal)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                   <span className="text-secondary">Shipping</span>
-                  <span style={{ color: 'var(--accent-emerald)' }}>FREE</span>
+                  <span style={{ color: shippingAmount === 0 ? 'var(--accent-emerald)' : '' }}>
+                    {shippingAmount === 0 ? 'FREE' : formatCurrency(shippingAmount)}
+                  </span>
                 </div>
                 <div className="divider" />
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>

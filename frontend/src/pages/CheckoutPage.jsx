@@ -6,6 +6,7 @@ import useCartStore from '../store/cart.store';
 import { ordersAPI } from '../api/orders.api';
 import { paymentsAPI } from '../api/payments.api';
 import { formatCurrency } from '../utils/helpers';
+import { PageLoader } from '../components/Loader';
 import toast from 'react-hot-toast';
 import './CheckoutPage.css';
 
@@ -19,7 +20,7 @@ const PAYMENT_METHODS = [
 
 export default function CheckoutPage() {
   const { user } = useAuthStore();
-  const { cart, fetchCart, clearCart } = useCartStore();
+  const { cart, loading: cartLoading, fetchCart, clearCart } = useCartStore();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -34,12 +35,20 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (user?.id) fetchCart(user.id);
-  }, [user?.id]);
+  }, [user?.id, fetchCart]);
 
   const items = cart?.items || [];
   const subtotal = cart?.totalAmount || cart?.totalPrice || 0;
   const shipping = subtotal > 999 ? 0 : 99;
   const total = subtotal + shipping;
+
+  useEffect(() => {
+    if (cartLoading || step === 3) return;
+    if (!items.length) {
+      toast.error('Your cart is empty');
+      navigate('/cart', { replace: true });
+    }
+  }, [cartLoading, items.length, navigate, step]);
 
   const handleAddressSubmit = (e) => {
     e.preventDefault();
@@ -73,19 +82,28 @@ export default function CheckoutPage() {
 
       const orderRes = await ordersAPI.create(orderPayload);
       const createdOrder = orderRes.data;
+      const createdOrderId = createdOrder.id || createdOrder.orderId;
 
-      // Create payment
-      try {
-        await paymentsAPI.create({
-          orderId: String(createdOrder.id || createdOrder.orderId),
-          userId: String(user.id),
-          amount: total,
-          currency: 'INR',
-          paymentMethod: paymentMethod,
-        });
-      } catch {/* payment creation may fail - order still created */}
+      const paymentRes = await paymentsAPI.create({
+        orderId: String(createdOrderId),
+        userId: String(user.id),
+        amount: total,
+        currency: 'INR',
+        paymentMethod: paymentMethod,
+      });
 
-      setOrderId(createdOrder.id || createdOrder.orderId);
+      const payment = paymentRes.data;
+      const paymentId = payment.paymentId || payment.id;
+
+      if (paymentMethod !== 'CASH_ON_DELIVERY' && paymentId) {
+        const processRes = await paymentsAPI.process(String(paymentId));
+        const processed = processRes.data;
+        if (processed.status === 'FAILED') {
+          throw new Error(processed.failureReason || 'Payment processing failed');
+        }
+      }
+
+      setOrderId(createdOrderId);
       setStep(3);
       await clearCart(user.id);
     } catch (err) {
@@ -94,6 +112,8 @@ export default function CheckoutPage() {
       setLoading(false);
     }
   };
+
+  if (cartLoading) return <div className="page-wrapper"><PageLoader /></div>;
 
   if (step === 3) {
     return (

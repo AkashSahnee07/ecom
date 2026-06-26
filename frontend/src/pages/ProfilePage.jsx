@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { User, Bell, ShoppingBag, Save } from 'lucide-react';
 import { userAPI } from '../api/auth.api';
 import { ordersAPI } from '../api/orders.api';
@@ -151,13 +152,13 @@ export default function ProfilePage() {
               {orders.length === 0 ? (
                 <p className="text-secondary">No orders yet.</p>
               ) : orders.map(o => (
-                <div key={o.id} className="card" style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Link key={o.id} to={`/orders/${o.id}`} className="card profile-order-link" style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', textDecoration: 'none' }}>
                   <div>
                     <p className="font-semibold text-sm">Order #{o.orderNumber || o.id}</p>
                     <p className="text-muted text-xs">{formatDate(o.createdAt)}</p>
                   </div>
                   <span className="badge badge-indigo">{o.status}</span>
-                </div>
+                </Link>
               ))}
             </div>
           )}

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import toast from 'react-hot-toast';
 import { cartAPI } from '../api/cart.api';
 
 const useCartStore = create((set, get) => ({
@@ -17,6 +18,8 @@ const useCartStore = create((set, get) => ({
     }
   },
 
+  resetCart: () => set({ cart: null, loading: false, error: null }),
+
   addItem: async (userId, productId, quantity = 1) => {
     set({ loading: true });
     try {
@@ -34,7 +37,7 @@ const useCartStore = create((set, get) => ({
       const res = await cartAPI.updateQuantity(userId, productId, quantity);
       set({ cart: res.data });
     } catch (err) {
-      console.error('Update quantity error:', err);
+      toast.error(err.response?.data?.message || 'Failed to update quantity');
     }
   },
 
@@ -43,7 +46,7 @@ const useCartStore = create((set, get) => ({
       const res = await cartAPI.removeItem(userId, productId);
       set({ cart: res.data });
     } catch (err) {
-      console.error('Remove item error:', err);
+      toast.error(err.response?.data?.message || 'Failed to remove item');
     }
   },
 
@@ -52,7 +55,7 @@ const useCartStore = create((set, get) => ({
       await cartAPI.clearCart(userId);
       set({ cart: null });
     } catch (err) {
-      console.error('Clear cart error:', err);
+      toast.error(err.response?.data?.message || 'Failed to clear cart');
     }
   },
 

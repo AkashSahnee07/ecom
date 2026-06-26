@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   ShoppingCart, User, Search, Menu, X, Package, LogOut,
-  LayoutDashboard, Bell, ChevronDown, Zap
+  LayoutDashboard, ChevronDown, Zap
 } from 'lucide-react';
 import useAuthStore from '../store/auth.store';
 import useCartStore from '../store/cart.store';
@@ -16,16 +16,22 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const { user, logout, isAdmin } = useAuthStore();
-  const { getItemCount } = useCartStore();
+  const cartCount = useCartStore((s) =>
+    (s.cart?.items || []).reduce((sum, item) => sum + (item.quantity || 0), 0)
+  );
+  const fetchCart = useCartStore((s) => s.fetchCart);
   const navigate = useNavigate();
   const location = useLocation();
-  const cartCount = getItemCount();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  useEffect(() => {
+    if (user?.id) fetchCart(user.id);
+  }, [user?.id, fetchCart]);
 
   useEffect(() => {
     setMenuOpen(false);
