@@ -1,0 +1,39 @@
+jwt:
+  secret: ${JWT_SECRET:mySecretKeybXlTdXBlclNlY3JldEtleUZvckpXVEhTQTI1Ng==}
+  issuer: ecommerce-platform
+  access-token-ttl: 900000
+  refresh-token-ttl: 604800000
+  blacklist-prefix: "jwt:bl:"
+  public-paths:
+    - /api/auth/login
+    - /api/auth/register
+    - /api/auth/refresh
+    - /api/users/register
+    - /auth/login
+    - /auth/register
+    - /auth/refresh
+    - /users/register
+    - /actuator
+    - /cart/health
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+management:
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING:0.1}
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}

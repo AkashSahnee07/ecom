@@ -69,7 +69,18 @@ management:
         enabled: true
   tracing:
     sampling:
-      probability: 1.0
+      probability: ${TRACING_SAMPLING:0.1}
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+
+jwt:
+  secret: ${JWT_SECRET:mySecretKeybXlTdXBlclNlY3JldEtleUZvckpXVEhTQTI1Ng==}
+  issuer: ecommerce-platform
+  access-token-ttl: 900000
+  refresh-token-ttl: 604800000
+  resource-server:
+    enabled: true
 
 logging:
   level:
@@ -104,10 +115,6 @@ app:
       timeout-minutes: 30
     shipping:
       default-days: 7
-  security:
-    jwt:
-      secret: ${JWT_SECRET:mySecretKey}
-      expiration: 86400000
 
 springdoc:
   api-docs:

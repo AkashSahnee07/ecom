@@ -16,34 +16,32 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-    
+
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-    
-    // JwtAuthenticationFilter is provided as a Spring component
-    
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
-        http.cors().disable().csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        http.csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable())
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/users/register").permitAll()
                         .requestMatchers("/users/validate").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/users/v3/api-docs/**", "/v3/api-docs/**", "/api-docs/**", "/users/swagger-ui/**", "/swagger-ui/**", "/users/swagger-ui.html", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/users/v3/api-docs/**", "/v3/api-docs/**", "/api-docs/**",
+                                "/users/swagger-ui/**", "/swagger-ui/**", "/users/swagger-ui.html", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
-                );
-        
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }
