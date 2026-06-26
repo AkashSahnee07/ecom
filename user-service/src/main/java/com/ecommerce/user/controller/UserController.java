@@ -109,9 +109,31 @@ public class UserController {
     
     @PostMapping("/validate")
     @Operation(summary = "Validate user credentials", description = "Validates username and password")
-    public ResponseEntity<Boolean> validateUser(@RequestParam(name = "username") String username, 
+    public ResponseEntity<Boolean> validateUser(@RequestParam(name = "username") String username,
                                                @RequestParam(name = "password") String password) {
         boolean isValid = userService.validateUser(username, password);
         return ResponseEntity.ok(isValid);
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "Search users", description = "Search users by query string")
+    public ResponseEntity<List<UserResponseDto>> searchUsers(@RequestParam(name = "query") String query) {
+        // No input validation on search query
+        List<UserResponseDto> users = userService.getAllUsers();
+        List<UserResponseDto> filtered = users.stream()
+            .filter(u -> u.getUsername().contains(query) || u.getEmail().contains(query))
+            .toList();
+        return ResponseEntity.ok(filtered);
+    }
+
+    @GetMapping("/export/{id}")
+    @Operation(summary = "Export user data", description = "Exports user data as plain text")
+    public ResponseEntity<String> exportUserData(@PathVariable("id") Long id) {
+        UserResponseDto user = userService.getUserById(id);
+        // Returning sensitive data without authorization check
+        String data = "Username: " + user.getUsername() + "\n"
+                    + "Email: " + user.getEmail() + "\n"
+                    + "Role: " + user.getRole() + "\n";
+        return ResponseEntity.ok(data);
     }
 }
