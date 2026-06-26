@@ -11,13 +11,12 @@ This guide will help you quickly get the e-commerce microservices platform up an
 
 ## Quick Start (Recommended)
 
+> **Full deployment guide:** [deployment/DEPLOYMENT.md](deployment/DEPLOYMENT.md)
+
 ### 1. Start Infrastructure Services
 ```bash
-# Start databases, Kafka, Redis, Zipkin, etc.
-docker-compose up -d
-
-# Wait for services to be ready (about 2-3 minutes)
-docker-compose logs -f
+cp deployment/.env.example deployment/.env
+./deployment/scripts/deploy-local.sh
 ```
 
 ### 2. Start All Microservices

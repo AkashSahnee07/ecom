@@ -1,0 +1,10 @@
+# Full local stack: infrastructure + observability + optional admin tools
+# Usage (from repo root):
+#   docker compose -f deployment/docker/docker-compose.local.yml up -d
+#   docker compose -f deployment/docker/docker-compose.local.yml --profile tools up -d
+#   docker compose -f deployment/docker/docker-compose.local.yml --profile logs up -d
+
+include:
+  - path: docker-compose.infra.yml
+  - path: docker-compose.observability.yml
+  - path: docker-compose.tools.yml

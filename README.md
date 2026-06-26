@@ -51,15 +51,12 @@ cd ecom
 
 #### Option A: Using Docker Compose (Recommended)
 ```bash
-# Start all infrastructure services
-docker-compose -f docker-compose-zipkin.yml up -d
+# Start all infrastructure + observability (see deployment/DEPLOYMENT.md)
+cp deployment/.env.example deployment/.env
+./deployment/scripts/deploy-local.sh
 
-# This will start:
-# - PostgreSQL (Port 5432)
-# - MySQL (Port 3306)
-# - Redis (Port 6379)
-# - Kafka & Zookeeper (Ports 9092, 2181)
-# - Zipkin (Port 9411)
+# Or from repo root:
+docker compose up -d
 ```
 
 #### Option B: Manual Setup

@@ -1,0 +1,28 @@
+{
+  "title": "Ecommerce Platform Overview",
+  "uid": "ecom-overview",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Services Up",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "targets": [{ "expr": "count(up{job=\"ecommerce-platform\"} == 1)", "legendFormat": "up" }]
+    },
+    {
+      "type": "graph",
+      "title": "HTTP Request Rate",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [{ "expr": "sum(rate(http_server_requests_seconds_count[5m])) by (application)", "legendFormat": "{{application}}" }]
+    },
+    {
+      "type": "graph",
+      "title": "JWT Auth Validations",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [{ "expr": "sum(rate(auth_jwt_validation_total[5m])) by (result, layer)", "legendFormat": "{{layer}} {{result}}" }]
+    }
+  ]
+}
