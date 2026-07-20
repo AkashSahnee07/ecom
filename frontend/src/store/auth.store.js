@@ -11,8 +11,10 @@ const useAuthStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const res = await authAPI.login(credentials);
-      const { token, user, refreshToken } = res.data;
-      localStorage.setItem('token', token);
+      const token = res.data?.accessToken || res.data?.token;
+      const user = res.data?.user || null;
+      const refreshToken = res.data?.refreshToken;
+      if (token) localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
       set({ user, token, loading: false });

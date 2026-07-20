@@ -1,0 +1,134 @@
+.lumen-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(250, 250, 250, 0.95);
+  border-bottom: 1px solid var(--color-line);
+  backdrop-filter: blur(6px);
+}
+
+.lumen-header-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  min-height: 70px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.lumen-logo {
+  font-family: var(--font-display);
+  letter-spacing: 0.2em;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.lumen-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.lumen-nav-link {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-mid);
+}
+
+.lumen-nav-link.active {
+  color: var(--color-ink);
+}
+
+.lumen-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lumen-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--color-line);
+  background: white;
+  padding: 8px 10px;
+}
+
+.lumen-search input {
+  border: 0;
+  background: transparent;
+  min-width: 180px;
+}
+
+.lumen-search input:focus {
+  outline: none;
+}
+
+.lumen-icon-btn {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-line);
+  background: white;
+}
+
+.lumen-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lumen-admin-link {
+  border: 1px solid var(--color-line);
+  background: white;
+  padding: 8px 10px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.lumen-mobile-menu {
+  padding: 12px 20px 18px;
+  border-top: 1px solid var(--color-line);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--color-paper);
+}
+
+.lumen-mobile-link {
+  padding: 8px 2px;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 880px) {
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: inline-flex;
+  }
+}
