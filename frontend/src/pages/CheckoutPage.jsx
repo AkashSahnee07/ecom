@@ -123,7 +123,7 @@ export default function CheckoutPage() {
               <button
                 id="continue-shopping-after-order"
                 className="btn btn-secondary"
-                onClick={() => navigate('/products')}
+                onClick={() => navigate('/shop')}
               >
                 Continue Shopping
               </button>
