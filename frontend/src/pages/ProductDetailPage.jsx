@@ -12,8 +12,6 @@ import useAuthStore from '../store/auth.store';
 import useCartStore from '../store/cart.store';
 import { formatCurrency, formatRelative, truncate } from '../utils/helpers';
 import toast from 'react-hot-toast';
-import { getSampleProductById, getSampleProducts } from '../data/sampleProducts';
-import { getFallbackImage, getSafeImage } from '../utils/imageFallback';
 import './ProductDetailPage.css';
 
 export default function ProductDetailPage() {
@@ -33,8 +31,6 @@ export default function ProductDetailPage() {
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState('overview');
   const [addingToCart, setAddingToCart] = useState(false);
-  const [sampleMode, setSampleMode] = useState(false);
-  const [detailImage, setDetailImage] = useState('');
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -42,7 +38,6 @@ export default function ProductDetailPage() {
       try {
         const prodRes = await productsAPI.getById(id);
         setProduct(prodRes.data);
-        setDetailImage(getSafeImage(prodRes.data?.imageUrl));
 
         // track behavior
         if (user?.id) {
@@ -66,25 +61,7 @@ export default function ProductDetailPage() {
         ]);
       } catch (err) {
         console.error('Product detail fetch error:', err);
-        const sampleProduct = getSampleProductById(id);
-        if (sampleProduct) {
-          setProduct(sampleProduct);
-          setDetailImage(getSafeImage(sampleProduct.imageUrl));
-          setInventory({
-            available: true,
-            totalAvailableQuantity: sampleProduct.stockQuantity || 0,
-          });
-          setSimilar(getSampleProducts().filter((item) => item.id !== sampleProduct.id).slice(0, 4));
-          setReviews([]);
-          setReviewStats({
-            averageRating: sampleProduct.averageRating || 0,
-            totalReviews: sampleProduct.reviewCount || 0,
-            ratingDistribution: {},
-          });
-          setSampleMode(true);
-        } else {
-          navigate('/shop');
-        }
+        navigate('/products');
       } finally {
         setLoading(false);
       }
@@ -165,13 +142,8 @@ export default function ProductDetailPage() {
           {/* Image */}
           <div className="product-detail-image-section">
             <div className="product-detail-image-wrapper card">
-              {detailImage ? (
-                <img
-                  src={detailImage}
-                  alt={product.name}
-                  className="product-detail-img"
-                  onError={() => setDetailImage(getFallbackImage())}
-                />
+              {product.imageUrl ? (
+                <img src={product.imageUrl} alt={product.name} className="product-detail-img" />
               ) : (
                 <div className="product-detail-img-placeholder">
                   <Package size={60} style={{ color: 'var(--text-muted)' }} />
@@ -240,35 +212,30 @@ export default function ProductDetailPage() {
               <button
                 id="add-to-cart-detail-btn"
                 className="btn btn-primary btn-lg"
+                style={{ flex: 1 }}
                 onClick={handleAddToCart}
-                disabled={!inStock || addingToCart || sampleMode}
+                disabled={!inStock || addingToCart}
               >
                 {addingToCart ? (
                   <span className="spinner" style={{ width: '18px', height: '18px', borderWidth: '2px' }} />
                 ) : (
-                  <>
-                    <ShoppingCart size={18} /> {sampleMode ? 'Sample Preview' : 'Add to Bag'}
-                  </>
+                  <><ShoppingCart size={18} /> Add to Cart</>
                 )}
               </button>
             </div>
-            {sampleMode && (
-              <p className="text-muted text-xs">
-                This product is sample data for UI preview.
-              </p>
-            )}
 
+            {/* Trust Badges */}
             <div className="trust-badges">
               <div className="trust-badge">
-                <Truck size={16} />
+                <Truck size={16} style={{ color: 'var(--accent-cyan)' }} />
                 <span>Free shipping over ₹999</span>
               </div>
               <div className="trust-badge">
-                <Shield size={16} />
+                <Shield size={16} style={{ color: 'var(--accent-emerald)' }} />
                 <span>30-day return policy</span>
               </div>
               <div className="trust-badge">
-                <Package size={16} />
+                <Package size={16} style={{ color: 'var(--accent-indigo)' }} />
                 <span>Secure packaging</span>
               </div>
             </div>

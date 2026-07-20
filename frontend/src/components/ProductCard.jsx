@@ -1,11 +1,9 @@
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Star, Eye } from 'lucide-react';
-import { useState } from 'react';
 import { formatCurrency, truncate } from '../utils/helpers';
 import useAuthStore from '../store/auth.store';
 import useCartStore from '../store/cart.store';
 import toast from 'react-hot-toast';
-import { getFallbackImage, getSafeImage } from '../utils/imageFallback';
 import './ProductCard.css';
 
 export default function ProductCard({ product }) {
@@ -24,7 +22,6 @@ export default function ProductCard({ product }) {
     : null;
 
   const inStock = stockQuantity === undefined || stockQuantity > 0;
-  const [imageSrc, setImageSrc] = useState(getSafeImage(imageUrl));
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
@@ -42,17 +39,11 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <Link to={`/shop/${id}`} className="product-card card" id={`product-card-${id}`}>
+    <Link to={`/products/${id}`} className="product-card card" id={`product-card-${id}`}>
       {/* Image */}
       <div className="product-img-wrapper">
         {imageUrl ? (
-          <img
-            src={imageSrc}
-            alt={name}
-            className="product-img"
-            loading="lazy"
-            onError={() => setImageSrc(getFallbackImage())}
-          />
+          <img src={imageUrl} alt={name} className="product-img" loading="lazy" />
         ) : (
           <div className="product-img-placeholder">
             <Eye size={28} />
