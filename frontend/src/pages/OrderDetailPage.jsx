@@ -122,7 +122,7 @@ export default function OrderDetailPage() {
                       {item.imageUrl ? <img src={item.imageUrl} alt={item.productName} /> : '📦'}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <Link to={`/shop/${item.productId}`} className="order-item-name">
+                      <Link to={`/products/${item.productId}`} className="order-item-name">
                         {item.productName || `Product #${item.productId}`}
                       </Link>
                       <p className="text-xs text-muted">Qty: {item.quantity}</p>

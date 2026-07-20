@@ -5,7 +5,6 @@ import { productsAPI, categoriesAPI } from '../api/products.api';
 import ProductCard from '../components/ProductCard';
 import { SkeletonCard } from '../components/Loader';
 import { generatePageNumbers, debounce } from '../utils/helpers';
-import { getSampleProducts, SAMPLE_CATEGORIES } from '../data/sampleProducts';
 import './ProductsPage.css';
 
 const SORT_OPTIONS = [
@@ -31,56 +30,10 @@ export default function ProductsPage() {
   const sortParam = searchParams.get('sort') || 'id,asc';
   const minPrice = searchParams.get('minPrice') || '';
   const maxPrice = searchParams.get('maxPrice') || '';
-  const featured = searchParams.get('featured') || '';
 
   const [searchInput, setSearchInput] = useState(search);
-  const [usingSampleData, setUsingSampleData] = useState(false);
 
   const [sortBy, sortDir] = sortParam.split(',');
-
-  const filterSampleProducts = useCallback(() => {
-    let filtered = [...getSampleProducts()];
-
-    if (search) {
-      const query = search.toLowerCase();
-      filtered = filtered.filter(
-        (product) =>
-          product.name.toLowerCase().includes(query) ||
-          product.brand?.toLowerCase().includes(query)
-      );
-    }
-    if (featured === 'true') {
-      filtered = filtered.filter((product) => product.featured);
-    }
-    if (categoryId) {
-      filtered = filtered.filter((product) => String(product.category?.id) === String(categoryId));
-    }
-    if (minPrice) {
-      filtered = filtered.filter((product) => product.price >= Number(minPrice));
-    }
-    if (maxPrice) {
-      filtered = filtered.filter((product) => product.price <= Number(maxPrice));
-    }
-
-    if (sortBy === 'price') {
-      filtered.sort((a, b) => (sortDir === 'asc' ? a.price - b.price : b.price - a.price));
-    } else if (sortBy === 'name') {
-      filtered.sort((a, b) =>
-        sortDir === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
-      );
-    } else {
-      filtered.sort((a, b) =>
-        sortDir === 'asc'
-          ? String(a.id).localeCompare(String(b.id))
-          : String(b.id).localeCompare(String(a.id))
-      );
-    }
-
-    setProducts(filtered);
-    setTotalElements(filtered.length);
-    setTotalPages(1);
-    setUsingSampleData(true);
-  }, [search, featured, categoryId, minPrice, maxPrice, sortBy, sortDir]);
 
   const updateParam = (key, val) => {
     const next = new URLSearchParams(searchParams);
@@ -97,8 +50,6 @@ export default function ProductsPage() {
 
       if (search) {
         res = await productsAPI.search(search, pageParams);
-      } else if (featured === 'true') {
-        res = await productsAPI.getFeatured(pageParams);
       } else if (categoryId) {
         res = await productsAPI.getByCategory(categoryId, pageParams);
       } else if (minPrice || maxPrice) {
@@ -108,42 +59,23 @@ export default function ProductsPage() {
       }
 
       const data = res.data;
-      const apiProducts = data?.content || data || [];
-      if (apiProducts.length) {
-        setProducts(apiProducts);
-        setTotalPages(data?.totalPages || 1);
-        setTotalElements(data?.totalElements || apiProducts.length);
-        setUsingSampleData(false);
-      } else {
-        filterSampleProducts();
-      }
+      setProducts(data?.content || data || []);
+      setTotalPages(data?.totalPages || 1);
+      setTotalElements(data?.totalElements || (data?.length || 0));
     } catch (err) {
       console.error('Products fetch error:', err);
-      filterSampleProducts();
+      setProducts([]);
     } finally {
       setLoading(false);
     }
-  }, [
-    page,
-    search,
-    categoryId,
-    sortBy,
-    sortDir,
-    minPrice,
-    maxPrice,
-    featured,
-    filterSampleProducts,
-  ]);
+  }, [page, search, categoryId, sortBy, sortDir, minPrice, maxPrice]);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
   useEffect(() => {
     categoriesAPI.getAll().then(res => {
-      const apiCategories = res.data?.content || res.data || [];
-      setCategories(apiCategories.length ? apiCategories : SAMPLE_CATEGORIES);
-    }).catch(() => {
-      setCategories(SAMPLE_CATEGORIES);
-    });
+      setCategories(res.data?.content || res.data || []);
+    }).catch(() => {});
   }, []);
 
   const handleSearchInput = debounce((val) => {
@@ -162,15 +94,10 @@ export default function ProductsPage() {
       <div className="container">
         <div className="page-header">
           <div>
-            <h1 className="page-title">Shop</h1>
+            <h1 className="page-title">All Products</h1>
             <p className="text-secondary text-sm" style={{ marginTop: '8px' }}>
               {totalElements > 0 ? `${totalElements.toLocaleString()} products found` : 'Browse our catalog'}
             </p>
-            {usingSampleData && (
-              <p className="text-muted text-xs" style={{ marginTop: '6px' }}>
-                Showing sample products while live inventory is unavailable.
-              </p>
-            )}
           </div>
         </div>
 

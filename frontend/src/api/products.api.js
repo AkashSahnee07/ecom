@@ -22,10 +22,10 @@ export const productsAPI = {
 };
 
 export const categoriesAPI = {
-  getAll: () => api.get('/categories'),
-  getById: (id) => api.get(`/categories/${id}`),
-  getHierarchy: () => api.get('/categories/hierarchy'),
-  create: (data) => api.post('/categories', data),
-  update: (id, data) => api.put(`/categories/${id}`, data),
-  delete: (id) => api.delete(`/categories/${id}`),
+  getAll: () => api.get('/products/categories'),
+  getById: (id) => api.get(`/products/categories/${id}`),
+  getHierarchy: () => api.get('/products/categories/hierarchy'),
+  create: (data) => api.post('/products/categories', data),
+  update: (id, data) => api.put(`/products/categories/${id}`, data),
+  delete: (id) => api.delete(`/products/categories/${id}`),
 };
