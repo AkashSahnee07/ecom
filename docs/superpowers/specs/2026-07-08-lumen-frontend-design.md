@@ -159,7 +159,7 @@ frontend/src/
 1. **Login request:** send `{ usernameOrEmail, password }` (not `{ email, password }`).
 2. **Login response:** read `accessToken` (and user payload as returned); persist under existing localStorage keys used by axios interceptor.
 3. **Vite proxy:** configure so browser `Origin` on POST/PUT/PATCH does not yield 403 in dev (e.g. strip/rewrite Origin or equivalent proxy option) so writes reach the gateway.
-4. **Categories:** align client with platform path `/api/categories` (not `/api/products/categories` if that is wrong); degrade gracefully if empty.
+4. **Categories:** call `/api/categories` (gateway path per platform docs). If the call fails or returns empty, hide category nav links and show Shop without category chips — do not crash.
 5. Keep all other existing `api/*.js` modules unless a path is proven wrong during implementation.
 
 ### 5.4 State

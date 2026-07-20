@@ -8,6 +8,7 @@ import { recommendationsAPI } from '../api/recommendations.api';
 import ProductCard from '../components/ProductCard';
 import { PageLoader } from '../components/Loader';
 import toast from 'react-hot-toast';
+import { getFallbackImage, getSafeImage } from '../utils/imageFallback';
 import './CartPage.css';
 
 export default function CartPage() {
@@ -26,7 +27,7 @@ export default function CartPage() {
           <div className="empty-state" style={{ minHeight: '60vh' }}>
             <div className="empty-state-icon"><ShoppingCart size={36} /></div>
             <h3 className="empty-state-title">Please sign in</h3>
-            <p className="empty-state-desc">Sign in to view your shopping cart</p>
+            <p className="empty-state-desc">Sign in to view your bag</p>
             <Link to="/login" className="btn btn-primary">Sign In</Link>
           </div>
         </div>
@@ -61,13 +62,13 @@ export default function CartPage() {
       <div className="page-wrapper">
         <div className="container">
           <div className="page-header">
-            <h1 className="page-title">Shopping Cart</h1>
+            <h1 className="page-title">Your Bag</h1>
           </div>
           <div className="empty-state" style={{ minHeight: '50vh' }}>
             <div className="empty-state-icon"><ShoppingCart size={36} /></div>
             <h3 className="empty-state-title">Your cart is empty</h3>
             <p className="empty-state-desc">Add products to your cart to continue shopping</p>
-            <Link to="/products" id="cart-browse-btn" className="btn btn-primary">Browse Products</Link>
+            <Link to="/shop" id="cart-browse-btn" className="btn btn-primary">Browse Products</Link>
           </div>
         </div>
       </div>
@@ -78,7 +79,7 @@ export default function CartPage() {
     <div className="page-wrapper">
       <div className="container">
         <div className="page-header">
-          <h1 className="page-title">Shopping Cart</h1>
+          <h1 className="page-title">Your Bag</h1>
           <button id="clear-cart-btn" className="btn btn-ghost btn-sm" onClick={handleClear}>
             <Trash2 size={14} /> Clear all
           </button>
@@ -92,7 +93,14 @@ export default function CartPage() {
                 {/* Image */}
                 <div className="cart-item-image">
                   {item.imageUrl ? (
-                    <img src={item.imageUrl} alt={item.productName || 'Product'} />
+                    <img
+                      src={getSafeImage(item.imageUrl)}
+                      alt={item.productName || 'Product'}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = getFallbackImage();
+                      }}
+                    />
                   ) : (
                     <div className="cart-img-placeholder">🛍️</div>
                   )}
@@ -101,7 +109,7 @@ export default function CartPage() {
                 {/* Info */}
                 <div className="cart-item-info">
                   <Link
-                    to={`/products/${item.productId}`}
+                    to={`/shop/${item.productId}`}
                     className="cart-item-name font-semibold"
                   >
                     {item.productName || `Product #${item.productId}`}
@@ -189,7 +197,7 @@ export default function CartPage() {
               </button>
 
               <Link
-                to="/products"
+                to="/shop"
                 id="cart-continue-shopping"
                 className="btn btn-ghost btn-full"
                 style={{ marginTop: '10px' }}
