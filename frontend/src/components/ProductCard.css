@@ -1,10 +1,12 @@
-/* ProductCard CSS */
 .product-card {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   cursor: pointer;
   text-decoration: none;
+  border: 1px solid var(--color-line);
+  min-height: 100%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .product-card:hover .product-actions-overlay {
@@ -13,15 +15,19 @@
 }
 
 .product-card:hover .product-img {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
-/* Image */
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
 .product-img-wrapper {
   position: relative;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
-  background: var(--bg-secondary);
+  background: #f7f7f7;
 }
 
 .product-img {
@@ -38,62 +44,61 @@
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
-  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+  background: #f3f3f3;
 }
 
-/* Badges */
 .product-badges {
   position: absolute;
-  top: var(--space-3);
-  left: var(--space-3);
+  top: 10px;
+  left: 10px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 5px;
 }
 
-/* Overlay */
 .product-actions-overlay {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: var(--space-3);
-  background: linear-gradient(transparent, rgba(10,11,20,0.9));
+  padding: 10px;
+  background: linear-gradient(transparent, rgba(10, 10, 10, 0.9));
   display: flex;
   justify-content: center;
   opacity: 0;
   transform: translateY(8px);
-  transition: var(--transition-base);
+  transition: all 0.2s ease;
 }
 
-/* Info */
 .product-info {
-  padding: var(--space-4);
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 8px;
   flex: 1;
 }
 
 .product-brand {
-  font-size: var(--font-size-xs);
-  color: var(--accent-indigo);
+  font-size: 11px;
+  color: var(--text-secondary);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .product-name {
-  font-size: var(--font-size-sm);
+  font-family: var(--font-display);
+  font-size: 20px;
   font-weight: 600;
   color: var(--text-primary);
-  line-height: 1.4;
+  line-height: 1.2;
+  min-height: 48px;
 }
 
 .product-rating {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 8px;
 }
 
 .rating-count { color: var(--text-muted); }
@@ -101,6 +106,14 @@
 .product-price-row {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 10px;
   margin-top: auto;
+  min-height: 26px;
+}
+
+@media (max-width: 640px) {
+  .product-name {
+    font-size: 18px;
+    min-height: 40px;
+  }
 }

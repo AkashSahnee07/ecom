@@ -1,17 +1,19 @@
-/* Products Page CSS */
 .products-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
-  margin-bottom: var(--space-6);
+  gap: 14px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
+  padding: 12px;
+  border: 1px solid var(--color-line);
+  background: #fff;
 }
 
 .toolbar-left {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 10px;
   flex: 1;
   flex-wrap: wrap;
 }
@@ -19,13 +21,13 @@
 .toolbar-right {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 10px;
 }
 
 .products-search {
   flex: 1;
-  min-width: 200px;
-  max-width: 380px;
+  min-width: 240px;
+  max-width: 420px;
   position: relative;
 }
 
@@ -41,7 +43,7 @@
   padding: 4px;
   display: flex;
   align-items: center;
-  transition: var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .clear-search-btn:hover { color: var(--text-secondary); }
@@ -49,30 +51,29 @@
 .filter-dot {
   width: 6px;
   height: 6px;
-  background: var(--accent-indigo);
+  background: var(--color-ink);
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-/* Filter Panel */
 .filter-panel {
-  padding: var(--space-6);
-  margin-bottom: var(--space-6);
+  padding: 14px;
+  margin-bottom: 20px;
   display: flex;
-  gap: var(--space-8);
+  gap: 18px;
   flex-wrap: wrap;
 }
 
 .filter-section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: 8px;
   flex: 1;
   min-width: 200px;
 }
 
 .filter-title {
-  font-size: var(--font-size-xs);
+  font-size: 11px;
   font-weight: 700;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -82,34 +83,49 @@
 .filter-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: 8px;
 }
 
 .filter-chip {
-  padding: 5px 12px;
-  border-radius: var(--radius-full);
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--color-line);
   color: var(--text-secondary);
-  font-size: var(--font-size-xs);
+  font-size: 11px;
   font-weight: 500;
   cursor: pointer;
-  transition: var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .filter-chip:hover {
-  background: var(--bg-card-hover);
+  background: #f5f5f5;
   color: var(--text-primary);
 }
 
 .filter-chip.active {
-  background: rgba(99,102,241,0.15);
-  border-color: var(--accent-indigo);
-  color: var(--accent-indigo);
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-paper);
 }
 
 .price-range-inputs {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 10px;
+}
+
+@media (max-width: 720px) {
+  .products-toolbar {
+    padding: 10px;
+  }
+
+  .products-search {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .toolbar-right {
+    width: 100%;
+  }
 }

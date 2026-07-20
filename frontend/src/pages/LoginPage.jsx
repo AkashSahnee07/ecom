@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Zap, ArrowRight } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import useAuthStore from '../store/auth.store';
 import toast from 'react-hot-toast';
 import './AuthPages.css';
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ usernameOrEmail: '', password: '' });
   const [showPass, setShowPass] = useState(false);
   const { login, loading } = useAuthStore();
   const navigate = useNavigate();
@@ -15,11 +15,14 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.email || !form.password) {
+    if (!form.usernameOrEmail || !form.password) {
       toast.error('Please fill in all fields');
       return;
     }
-    const result = await login({ email: form.email, password: form.password });
+    const result = await login({
+      usernameOrEmail: form.usernameOrEmail,
+      password: form.password,
+    });
     if (result.success) {
       toast.success('Welcome back!');
       navigate('/');
@@ -30,36 +33,29 @@ export default function LoginPage() {
 
   return (
     <div className="auth-page">
-      <div className="ambient-orb orb-1" />
-      <div className="ambient-orb orb-2" />
-
-      <div className="auth-card animate-fade-in">
-        {/* Logo */}
+      <div className="auth-card">
         <div className="auth-logo">
-          <div className="navbar-logo-icon">
-            <Zap size={20} />
-          </div>
-          <span className="auth-logo-text">ShopSphere</span>
+          <span className="auth-logo-text">LUMEN</span>
         </div>
 
         <h1 className="auth-title">Welcome back</h1>
-        <p className="auth-subtitle">Sign in to your account to continue</p>
+        <p className="auth-subtitle">Sign in to continue shopping black pottery essentials.</p>
 
         <form id="login-form" className="auth-form" onSubmit={handleSubmit}>
           <div className="input-wrapper">
-            <label className="input-label" htmlFor="login-email">Email address</label>
+            <label className="input-label" htmlFor="login-email">Email or username</label>
             <div className="input-icon-wrapper">
               <Mail size={16} className="input-icon" />
               <input
                 id="login-email"
-                name="email"
-                type="email"
+                name="usernameOrEmail"
+                type="text"
                 className="input"
                 placeholder="you@example.com"
-                value={form.email}
+                value={form.usernameOrEmail}
                 onChange={handleChange}
                 required
-                autoComplete="email"
+                autoComplete="username"
               />
             </div>
           </div>
@@ -78,12 +74,14 @@ export default function LoginPage() {
                 onChange={handleChange}
                 required
                 style={{ paddingRight: '44px' }}
+                autoComplete="current-password"
               />
               <button
                 type="button"
                 className="password-toggle"
                 onClick={() => setShowPass(!showPass)}
                 tabIndex={-1}
+                aria-label="Toggle password visibility"
               >
                 {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -105,9 +103,9 @@ export default function LoginPage() {
         </form>
 
         <p className="auth-footer-text">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link to="/register" className="auth-link" id="login-register-link">
-            Create one free
+            Create one
           </Link>
         </p>
       </div>

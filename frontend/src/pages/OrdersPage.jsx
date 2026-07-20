@@ -67,7 +67,7 @@ export default function OrdersPage() {
             <p className="empty-state-desc">
               {orders.length === 0 ? "You haven't placed any orders yet." : 'No orders match your search.'}
             </p>
-            <Link to="/products" id="orders-shop-btn" className="btn btn-primary">Start Shopping</Link>
+            <Link to="/shop" id="orders-shop-btn" className="btn btn-primary">Start Shopping</Link>
           </div>
         ) : (
           <div className="orders-list animate-fade-in">
